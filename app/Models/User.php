@@ -17,10 +17,18 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name',
+        'username',
+        'role',
         'email',
         'password',
     ];
+
+    public function konsultasi(){
+        return $this->hasMany(konsultasi::class);
+    }
+    public function pengajuan(){
+        return $this->hasMany(pengajuan::class);
+    }
 
     /**
      * The attributes that should be hidden for arrays.
