@@ -1,6 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+@if ($message = Session::get('success'))
+    <div class="container">
+        <div class="alert alert-success">
+            <h3><i class="fa fa-check-circle"></i> &nbsp;Pengajuan SKU</h3>
+            <p>&emsp;&ensp;{{$message}}</p>
+        </div>
+    </div>
+    @endif
    <div class="container bg-white pt-4 pb-4">
         <table class="table">
             <thead>

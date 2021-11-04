@@ -1,10 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+<form action="{{ route('kesalahan_pengajuan',$pengajuan->id_pengajuan) }}" method="GET">
    <div class="container-fluid pt-4 pb-4 mt-0">
         <div class="row">
 
         <!-- DATA DIRI -->
+            @csrf
             <div class="col-8 bg-white">
                 <div class="row mt-1 pl-3 pr-3 pt-3">
                     <div class="col ">
@@ -31,7 +33,7 @@
                         <div class="row">
                         <div class="col">
                                 <div class="checkbox">
-                                    <p><b>{{$pengajuan->data_diri->nama_pengaju}} &nbsp</b><input type="checkbox" value=""></p>
+                                    <p><b>{{$pengajuan->data_diri->nama_pengaju}} &nbsp</b><input type="checkbox" value="1" name="nama_pengaju"></p>
                                 </div>
                             </div>           
                             <?php
@@ -40,7 +42,7 @@
                             ?>          
                             <div class="col-5">
                                 <div class="checkbox">
-                                    <p><b>{{$day}} , {{$date}} &nbsp</b><input type="checkbox" value=""></p>
+                                    <p><b>{{$day}} , {{$date}} &nbsp</b><input type="checkbox" value="1" name="tanggal_pengajuan"></p>
                                 </div>
                             </div>
                         </div>
@@ -55,17 +57,17 @@
                         <div class="row">
                             <div class="col">
                                 <div class="checkbox">
-                                    <p><b>{{$pengajuan->data_diri->dusun_jalan}}</b>&nbsp <input type="checkbox" value=""></p>
+                                    <p><b>{{$pengajuan->data_diri->dusun_jalan}}</b>&nbsp <input type="checkbox" value="1" name="dusun_jalan"></p>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="checkbox">
-                                    <p><b>{{$pengajuan->data_diri->kelurahan_desa}}</b>&nbsp <input type="checkbox" value=""></p>
+                                    <p><b>{{$pengajuan->data_diri->kelurahan_desa}}</b>&nbsp <input type="checkbox" value="1" name="kelurahan_desa"></p>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="checkbox">
-                                    <p><b>{{$pengajuan->data_diri->kecamatan}}</b>&nbsp <input type="checkbox" value=""></p>
+                                    <p><b>{{$pengajuan->data_diri->kecamatan}}</b>&nbsp <input type="checkbox" value="1" name="kecamatan"></p>
                                 </div>
                             </div>
                         </div>
@@ -101,7 +103,7 @@
                             </p>
                         </div>
                         <div class="col-4">
-                            <p class="text-right"><input type="checkbox" class="text-right"></p>
+                            <p class="text-right"><input type="checkbox" class="text-right" name="scan_ktp" value="1"></p>
                         </div>  
                     </div> 
 
@@ -119,7 +121,7 @@
                             </p>
                         </div>
                         <div class="col-4">
-                            <p class="text-right"><input type="checkbox" class="text-right"></p>
+                            <p class="text-right"><input type="checkbox" class="text-right" name="pas_foto" value="1"></p>
                         </div>  
                     </div>
 
@@ -137,7 +139,7 @@
                             </p>
                         </div>
                         <div class="col-4">
-                            <p class="text-right"><input type="checkbox" class="text-right"></p>
+                            <p class="text-right"><input type="checkbox" class="text-right" name="foto_produk" value="1"></p>
                         </div>  
                     </div>
 
@@ -155,7 +157,7 @@
                             </p>
                         </div>
                         <div class="col-4">
-                            <p class="text-right"><input type="checkbox" class="text-right"></p>
+                            <p class="text-right"><input type="checkbox" class="text-right" name="surat_pernyataan" value="1"></p>
                         </div>  
                     </div>
 
@@ -173,7 +175,7 @@
                             </p>
                         </div>
                         <div class="col-4">
-                            <p class="text-right"><input type="checkbox" class="text-right"></p>
+                            <p class="text-right"><input type="checkbox" class="text-right" name="sku" value="1"></p>
                         </div>  
                     </div>
                 </div>
@@ -202,17 +204,17 @@
                 <div class="row text-start mt-0">
                     <div class="col">
                         <div class="checkbox">
-                            <p><b>{{$pengajuan->usaha->nama_usaha}}</b>&nbsp <input type="checkbox" value=""></p>
+                            <p><b>{{$pengajuan->usaha->nama_usaha}}</b>&nbsp <input type="checkbox" value="1" name="nama_usaha"></p>
                         </div>
                     </div>
                     <div class="col">
                         <div class="checkbox">
-                            <p><b>{{$pengajuan->usaha->jenis_usaha}}</b>&nbsp <input type="checkbox" value=""></p>
+                            <p><b>{{$pengajuan->usaha->jenis_usaha}}</b>&nbsp <input type="checkbox" value="1" name="jenis_usaha"></p>
                         </div>
                     </div>
                     <div class="col">
                         <div class="checkbox">
-                            <p><b>{{$pengajuan->usaha->kegiatan_usaha}}</b>&nbsp <input type="checkbox" value=""></p>
+                            <p><b>{{$pengajuan->usaha->kegiatan_usaha}}</b>&nbsp <input type="checkbox" value="1" name="kegiatan_usaha"></p>
                         </div>
                     </div>
                     <?php
@@ -220,7 +222,7 @@
                     ?>
                     <div class="col">
                         <div class="checkbox">
-                            <p><b>{{$year}}</b>&nbsp <input type="checkbox" value=""></p>
+                            <p><b>{{$year}}</b>&nbsp <input type="checkbox" value="1" name="tahun_mulai"></p>
                         </div>
                     </div>
                 </div>
@@ -236,27 +238,27 @@
                 <div class="row text-start">
                     <div class="col">
                         <div class="checkbox">
-                            <p><b>Rp{{$usaha->nilai_usaha->modal_usaha}}</b>&nbsp <input type="checkbox" value=""></p>
+                            <p><b>Rp{{$usaha->nilai_usaha->modal_usaha}}</b>&nbsp <input type="checkbox" value="1" name="modal_usaha"></p>
                         </div>
                     </div>
                     <div class="col">
                         <div class="checkbox">
-                            <p><b>Rp.{{$usaha->nilai_usaha->asset}}</b>&nbsp <input type="checkbox" value=""></p>
+                            <p><b>Rp.{{$usaha->nilai_usaha->asset}}</b>&nbsp <input type="checkbox" value="1" name="asset"></p>
                         </div>
                     </div>
                     <div class="col">
                         <div class="checkbox">
-                            <p><b>Rp{{$usaha->nilai_usaha->omset}}</b>&nbsp <input type="checkbox" value=""></p>
+                            <p><b>Rp{{$usaha->nilai_usaha->omset}}</b>&nbsp <input type="checkbox" value="1" name="omset"></p>
                         </div>
                     </div>
                     <div class="col">
                         <div class="checkbox">
-                            <p><b>Rp{{$usaha->nilai_usaha->keuntungan}}</b>&nbsp <input type="checkbox" value=""></p>
+                            <p><b>Rp{{$usaha->nilai_usaha->keuntungan}}</b>&nbsp <input type="checkbox" value="1" name="keuntungan"></p>
                         </div>
                     </div>
                     <div class="col">
                         <div class="checkbox">
-                            <p><b>{{$usaha->nilai_usaha->jumlah_tenaga_kerja}} Orang</b>&nbsp <input type="checkbox" value=""></p>
+                            <p><b>{{$usaha->nilai_usaha->jumlah_tenaga_kerja}} Orang</b>&nbsp <input type="checkbox" value="1" name="jumlah_tk"></p>
                         </div>
                     </div>
                 </div>
@@ -281,27 +283,29 @@
                 <div class="row text-start">
                     <div class="col-3">
                         <div class="checkbox">
-                            <p><b>{{$pd}}</b>&nbsp <input type="checkbox" value=""></p>
+                            <p><b>{{$pd}}</b>&nbsp <input type="checkbox" value="1" name="pinjaman_dana"></p>
                         </div>
                     </div>
                     <div class="col-3">
                         <div class="checkbox">
-                            <p><b>{{$ipu}}</b>&nbsp <input type="checkbox" value=""></p>
+                            <p><b>{{$ipu}}</b>&nbsp <input type="checkbox" value="1" name="ikut_pembinaan"></p>
                         </div>
                     </div>
                 </div>
             </div>
-            </div>
+        </div>
 
             <div class="row text-right mt-5">
-                <div class="col"><a href="{{route('detail-pengajuan.unduh',$pengajuan->id_pengajuan)}}">{{$pengajuan->id_pengajuan}}</a>
-                </div>
+                <div class="col"></div>
                 <div class="col-3">
-                    <button type="submit" class="btn btn-danger">Verifikasi</button>
+                    <button type="submit" class="btn btn-danger" >Verifikasi</button>
                 </div>
             </div>
+
         </div>        
-    </div>
+    </div>                
+</form>
+
 
 @endsection
 
@@ -315,10 +319,10 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
         <div class="modal-body">
-            <iframe src="/dist/img/file.pdf" width="595" height="485" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
+        <img class="img-responsive" style="max-height:250px;"src="/images/{{$pengajuan->berkas->scan_ktp}}" alt="">   
         </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger">Verifikasi</button>
+          -
       </div>
     </div>
   </div>
@@ -332,10 +336,10 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <img class="img-responsive" style="max-height:250px;" src="{{$pengajuan->berkas->pas_foto_berwarna}}" alt="">
+        <img class="img-responsive" style="max-height:250px;" src="/images/{{$pengajuan->berkas->pas_foto_berwarna}}" alt="">
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger">Verifikasi</button>
+          -
       </div>
     </div>
   </div>
@@ -349,10 +353,10 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <img class="img-responsive" style="max-height:250px;" src="{{$pengajuan->berkas->foto_produk}}" alt="">
+        <img class="img-responsive" style="max-height:250px;" src="/images/{{$pengajuan->berkas->foto_produk}}" alt="">
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger">Verifikasi</button>
+          -
       </div>
     </div>
   </div>
@@ -366,9 +370,11 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-      <iframe src="/dist/img/file.pdf" width="595" height="485" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>      </div>
+      <img class="img-responsive" style="max-height:600px;" width="450px" height="600px" src="/images/{{$pengajuan->berkas->surat_pernyataan}}" alt="">
+
+    </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger">Verifikasi</button>
+          -
       </div>
     </div>
   </div>
@@ -382,10 +388,16 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-      <iframe src="/dist/img/file.pdf" width="595" height="485" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>      </div>
+        <img class="img-responsive" style="max-height:500px;" src="/images/{{$pengajuan->berkas->sku_dari_desa}}" alt="">
+    </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger">Verifikasi</button>
+          -
       </div>
     </div>
   </div>
 </div>
+
+
+<script src="/js/pdfobject.js"></script>
+<script>PDFObject.embed("/dist/img/file.pdf", "#example1");</script>
+<script src="https://github.com/pipwerks/PDFObject/blob/master/pdfobject.min.js"></script>

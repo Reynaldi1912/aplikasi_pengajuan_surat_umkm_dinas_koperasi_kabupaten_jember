@@ -23,6 +23,16 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $title = "Layanan";
+        $path = array("Dashboard");
+        $path_link = array(route('home'));
+        return view('dashboard',['title'=>$title , 'path'=>$path , 'path_link'=>$path_link]);
+    }
+    public function form()
+    {
+        $title = "Pengajuan SKU";
+        $path = array("Dashboard","Pengajuan");
+        $path_link = array(route('home'),route('form'));
+        return view('user.form',['title'=>$title , 'path'=>$path , 'path_link'=>$path_link]);
     }
 }

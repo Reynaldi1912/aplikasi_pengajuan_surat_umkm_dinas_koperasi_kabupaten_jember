@@ -13,6 +13,7 @@ class usaha extends Model
     protected $fillable = [
         'id_usaha',
         'nilai_usaha_id',
+        'nama_usaha',
         'jenis_usaha',
         'kegiatan_usaha',
         'tanggal_usaha_mulai',

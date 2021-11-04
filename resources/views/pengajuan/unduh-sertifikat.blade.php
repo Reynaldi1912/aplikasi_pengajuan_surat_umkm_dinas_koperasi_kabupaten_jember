@@ -1,4 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-<iframe src="/dist/file.pdf" width="595" height="485" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>@endsection
+<div class="row text-center pt-4">
+        <p>Tekan <b>Print Sertifikat</b> untuk melakukan print sertifikat</p>
+        <a class="btn btn-outline-success" href="{{route('unduh_sertif', $pengajuan->id_pengajuan)}}">Print Sertifikat</a>
+    <div class="col pt-5">
+        <a class="btn btn-danger" href="{{route('list-pengajuan')}}">Selanjutnya</a>
+    </div>
+</div>
+@endsection

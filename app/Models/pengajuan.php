@@ -31,4 +31,7 @@ class pengajuan extends Model
     public function berkas(){
         return $this->belongsTo(berkas::class,'berkas_id','id_berkas');
     }
+    public function pengajuan_ditolak(){
+        return $this->hasMany(pengajuan_ditolak::class);
+    }
 }

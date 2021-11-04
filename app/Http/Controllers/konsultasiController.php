@@ -7,6 +7,9 @@ use App\Models\konsultasi;
 use App\Models\konsultasi_ditolak;
 use App\Models\User;
 use Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\konsultasiDiterima;
+use App\Mail\konsultasiDitolak;
 
 
 class konsultasiController extends Controller
@@ -19,7 +22,7 @@ class konsultasiController extends Controller
     public function index()
     {
         $title = "Pengajuan";
-        $path = array("Surat Keterangan Usaha","Pengajuan");
+        $path = array("Konsultasi","Pengajuan");
         $path_link = array(route('list-konsultasi'),route('list-konsultasi'));
         $list_konsultasi = konsultasi::all()->where('status_konsultasi','pending');
         return view('konsultasi.list-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'list_konsultasi'=>$list_konsultasi]);
@@ -27,7 +30,7 @@ class konsultasiController extends Controller
     public function index2()
     {
         $title = "Pengajuan";
-        $path = array("Surat Keterangan Usaha","Pengajuan");
+        $path = array("Konsultasi","Pengajuan");
         $path_link = array(route('list-konsultasi'),route('list-konsultasi'));
         $list_konsultasi = konsultasi::all()->where('status_konsultasi','terima')
                                             ->where('tanggal_pengajuan',date("Y-m-d"));
@@ -52,7 +55,28 @@ class konsultasiController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nama_lengkap' => 'required',
+            'keterangan' => 'required',
+        ]);
+
+        $konsultasi = new konsultasi;
+        $konsultasi->users_id = Auth::user()->id;
+        $konsultasi->nama_pengaju = $request->get('nama_lengkap');
+        $konsultasi->sesi_konsultasi = $request->get('sesi');
+        $konsultasi->tanggal_pengajuan = date("Y-m-d");
+        $konsultasi->keterangan = $request->get('keterangan');
+        $konsultasi->status_konsultasi = "pending";
+
+        $konsultasi->save();
+
+        return redirect()->route('form-konsultasi')->with('success','Pengajuan Anda Telah Diajukan');
+    }
+    public function form(){
+        $title = "Konsultasi";
+        $path = array("Dashboard","Konsultasi");
+        $path_link = array(route('home'),route('form-konsultasi'));
+        return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link]);
     }
 
     /**
@@ -83,17 +107,22 @@ class konsultasiController extends Controller
             'keterangan' => 'required',
             ]);
 
-        $k = konsultasi::all()->where('id_konsultasi',$id)->first();
+        $k = konsultasi::with('User')->where('id_konsultasi',$id)->first();
         
         $k->status_konsultasi = 'ditolak';
         $k->save();
 
+        
         $tolak = new konsultasi_ditolak;
 
         $tolak->konsultasi_id = $id;
         $tolak->keterangan = $request->get('keterangan');
 
         $tolak->save();
+
+        $tolak = konsultasi_ditolak::all()->where('konsultasi_id',$id)->first();
+        Mail::to($k->User->email)->send(new konsultasiDitolak($tolak));
+
 
         return redirect()->route('list-konsultasi')->with('tolak',' Pengusaha Telah Dikirimkan E-Mail Penolakan');;
     }
@@ -104,6 +133,7 @@ class konsultasiController extends Controller
         $k = konsultasi::all()->where('id_konsultasi',$id)->first();
         $k->status_konsultasi = 'selesai_konsul';
         $k->save();
+        
         return redirect()->route('list-konsultasi-hari-ini')->with('success',' Sesi '. $k->sesi_konsultasi .' untuk '. $k->nama_pengaju);;
     }
 
@@ -116,13 +146,15 @@ class konsultasiController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $k = konsultasi::all()->where('id_konsultasi',$id)->first();
+        $konsultasi = konsultasi::with('User')->where('id_konsultasi',$id)->first();
         
-        $k->status_konsultasi = $request->get('stts_konsul');
-        $k->save();
+        $konsultasi->status_konsultasi = $request->get('stts_konsul');
+        $konsultasi->save();
 
-        $day = date('l',strtotime($k->tanggal_pengajuan));
-        $date = date('d F Y', strtotime($k->tanggal_pengajuan));
+        $day = date('l',strtotime($konsultasi->tanggal_pengajuan));
+        $date = date('d F Y', strtotime($konsultasi->tanggal_pengajuan));
+
+        Mail::to($konsultasi->User->email)->send(new konsultasiDiterima($day,$date,$konsultasi));
 
         return back()->with('success', "$day , $date");;
     }
