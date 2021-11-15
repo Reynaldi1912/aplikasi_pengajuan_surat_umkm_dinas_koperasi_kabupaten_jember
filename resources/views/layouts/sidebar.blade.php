@@ -128,8 +128,8 @@
                   <p>Are you sure you want to logout?</p>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
-                  <a href="{{ route('logout') }}" class="btn btn-primary"
+                  <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancel</button>
+                  <a href="{{ route('logout') }}" class="btn btn-danger"
                                 onclick="event.preventDefault();
                                 document.getElementById('logout-form').submit();">Logout
                   </a>

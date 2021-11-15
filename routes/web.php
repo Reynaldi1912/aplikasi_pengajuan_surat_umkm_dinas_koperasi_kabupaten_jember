@@ -13,14 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
 
 Auth::routes();
 Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class,'logout'])->name('logout');
 
-// Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/pengajuan-user', [App\Http\Controllers\HomeController::class, 'form'])->name('form');
@@ -54,10 +50,5 @@ Route::get('/konsultasi/ditolak/penolakan/{id}', [App\Http\Controllers\konsultas
 
 Route::get('/upload/{id}', [App\Http\Controllers\pengajuanController::class,'upload_sertifikat'])->name('upload.sertifikat');
 Route::post('/upload-sertifikat/store/{id}', [App\Http\Controllers\pengajuanController::class,'dropzoneStore'])->name('dropzone.store');
-
-
-
-
-
 
 Auth::routes();

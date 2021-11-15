@@ -58,13 +58,14 @@ class konsultasiController extends Controller
         $request->validate([
             'nama_lengkap' => 'required',
             'keterangan' => 'required',
+            'tanggal_konsultasi => required'
         ]);
 
         $konsultasi = new konsultasi;
         $konsultasi->users_id = Auth::user()->id;
         $konsultasi->nama_pengaju = $request->get('nama_lengkap');
         $konsultasi->sesi_konsultasi = $request->get('sesi');
-        $konsultasi->tanggal_pengajuan = date("Y-m-d");
+        $konsultasi->tanggal_pengajuan = $request->get('tanggal_konsultasi');
         $konsultasi->keterangan = $request->get('keterangan');
         $konsultasi->status_konsultasi = "pending";
 

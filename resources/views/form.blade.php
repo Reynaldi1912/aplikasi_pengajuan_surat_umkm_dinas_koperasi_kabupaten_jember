@@ -8,13 +8,13 @@
     @endif
     <ul class="nav nav-pills nav-fill">
         <li class="nav-item">
-            <a class="nav-link {{ $currentStep != 1 ? '' : 'active' }}" href="#step1">Step 1</a>
+            <a class="nav-link {{ $currentStep != 1 ? '' : 'active btn-danger' }}" href="#step1">Step 1</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ $currentStep != 2 ? '' : 'active' }}" href="#step2">Step 2</a>
+            <a class="nav-link {{ $currentStep != 2 ? '' : 'active btn-danger' }}" href="#step2">Step 2</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ $currentStep != 3 ? '' : 'active' }}" href="#step3">Step 3</a>
+            <a class="nav-link {{ $currentStep != 3 ? '' : 'active btn-danger' }}" href="#step3">Step 3</a>
         </li>
     </ul>
     <div class="row pt-3">
@@ -129,7 +129,8 @@
                     <div class="mb-3">
                         <label for="jenis_usaha" class="form-label">Jenis Usaha</label>
                         <select class="form-select" wire:model="jenis_usaha" class="form-control {{$errors->first('jenis_usaha') ? "is-invalid" : "" }}" id="jenis_usaha" aria-describedby="jenis_usaha">
-                            <option value="Produksi" selected>Produksi</option>
+                            <option selected>Pilih Jenis Usaha</option>    
+                            <option value="Produksi">Produksi</option>
                             <option value="Perdagangan">Perdagangan</option>
                             <option value="Jasa Pertanian">Jasa Pertanian</option>
                             <option value="Peternakan">Peternakan</option>
