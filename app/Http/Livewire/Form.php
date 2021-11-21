@@ -19,7 +19,7 @@ class Form extends Component
     use WithFileUploads;
 
     public $currentStep = 1;
-    public $nama_lengkap, $nama_dusun, $nama_kelurahan, $nama_kecamatan , $telp , $users_id;
+    public $nama_lengkap, $nama_dusun, $nama_kelurahan, $nama_kecamatan , $telp , $users_id , $nik;
     public $nama_usaha , $jenis_usaha , $kegiatan_usaha , $tahun_mulai , $modal , $asset ,$omset , $keuntungan , $jumlah_tk , $pinjaman_dana , $ikut_pembinaan;
     public $scan_ktp , $pas_foto , $foto_produk , $surat_pernyataan , $sku;
     public $successMessage = '';
@@ -27,15 +27,14 @@ class Form extends Component
     public function firstStepSubmit()
     {
       
-
         $validatedData = $this->validate([
             'nama_lengkap' => 'required',
             'nama_dusun' => 'required',
             'nama_kelurahan' => 'required',
             'nama_kecamatan' => 'required',
             'telp' =>'required'
-        ]);
- 
+        ]);            
+
         $this->currentStep = 2;
     }
   

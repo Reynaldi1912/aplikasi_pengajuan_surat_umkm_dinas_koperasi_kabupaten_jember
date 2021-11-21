@@ -100,10 +100,12 @@
             </ul>
           </li>
           @endif
-          <li>
-          <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#logoutModal">
+          <li class="nav-item">
+          <a class="dropdown-item nav-link" href="javascript:void(0);" data-toggle="modal" data-target="#logoutModal">
             <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-            Logout
+            <p style="font-size:15px">
+                Logout
+              </p>
           </a>
           </li>
         </ul>

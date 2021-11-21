@@ -1,5 +1,3 @@
-
-
 <div class="pt-5">
     @if(!empty($successMessage))
     <div class="alert alert-success">
@@ -48,7 +46,7 @@
                 <div class="col-5">
                     <div class="mb-3">
                         <p>Nama Dusun / Jalan</p>
-                        <input placeholder="Masukan Nama Dusn / Jalan" type="text" wire:model="nama_dusun" class="form-control {{$errors->first('nama_dusun') ? "is-invalid" : "" }}" id="nama_dusun">
+                        <input placeholder="Masukan Nama Dusun / Jalan" type="text" wire:model="nama_dusun" class="form-control {{$errors->first('nama_dusun') ? "is-invalid" : "" }}" id="nama_dusun">
                         @error('nama_dusun')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -59,7 +57,7 @@
                 <div class="col-5">
                     <div class="mb-3">
                         <p>Nama Kelurahan / Desa</p>
-                        <input placeholder="Masukan Nama Desa / Kelurahan" type="text" wire:model="nama_kelurahan" class="form-control {{$errors->first('nama_kelurahan') ? "is-invalid" : "" }}" id="nama_kelurahan">
+                        <input placeholder="Masukan Nama Desa / Kelurahan" type="text" wire:model="nama_kelurahan" class="form-control {{$errors->first('nama_kelurahan') ? "is-invalid" : "" }}" id="nama_kelurahan" aria-describedby="nama_kelurahan">
                         @error('nama_kelurahan')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -69,7 +67,6 @@
                 </div>
                 <div class="col"></div>
             </div>
-           
            
             <div class="mb-3 row">
                 <div class="col"></div>
@@ -102,7 +99,7 @@
             </div>
            
             <div class="row pt-4">
-                <div class="col text-end"> <button class="btn btn-danger" wire:click="firstStepSubmit"
+                <div class="col text-end"> <button class="btn btn-danger" wire:click="firstStepSubmit" type="submit"
                 type="button">Berikutnya</button></div>
             </div>
             

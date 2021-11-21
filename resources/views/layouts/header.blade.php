@@ -7,6 +7,7 @@
       </li>
     </ul>
 
+    @if(Auth::user()->role=='admin')
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
 
@@ -36,4 +37,5 @@
         </div>
       </li>
     </ul>
+    @endif
   </nav>
