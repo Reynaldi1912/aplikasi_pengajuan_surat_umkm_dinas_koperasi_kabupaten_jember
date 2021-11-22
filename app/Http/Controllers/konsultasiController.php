@@ -6,11 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\konsultasi;
 use App\Models\konsultasi_ditolak;
 use App\Models\User;
-use Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\konsultasiDiterima;
 use App\Mail\konsultasiDitolak;
-
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth as Auth;
 
 class konsultasiController extends Controller
 {
@@ -77,7 +77,19 @@ class konsultasiController extends Controller
         $title = "Konsultasi";
         $path = array("Dashboard","Konsultasi");
         $path_link = array(route('home'),route('form-konsultasi'));
-        return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link]);
+
+        $status = konsultasi::where('users_id', Auth::id())
+            ->where('tanggal_pengajuan', '>=', Carbon::today())
+            ->whereIn('status_konsultasi', ['pending', 'terima'])
+            ->first();
+
+        return view('konsultasi.form-konsultasi',[
+            'title'=>$title , 
+            'path'=>$path, 
+            'path_link'=>$path_link, 
+            'active' => ($status) ? true : false,
+            'konsultasi' => ($status) ? $status : null
+        ]);
     }
 
     /**
@@ -148,6 +160,15 @@ class konsultasiController extends Controller
     public function update(Request $request, $id)
     {
         $konsultasi = konsultasi::with('User')->where('id_konsultasi',$id)->first();
+
+        if($request->action == 'batal'){
+            $konsultasi->update([
+                'status_konsultasi' => 'batal_konsul'
+            ]);
+
+            return redirect()->route('form-konsultasi')
+                ->with('success','Pengajuan Konsultasi Anda Telah Dibatalkan');
+        }
         
         $konsultasi->status_konsultasi = $request->get('stts_konsul');
         $konsultasi->save();

@@ -54,5 +54,6 @@ Route::group(['middleware'=>['cekLevelUser']], function(){
     //Pengajuan Konsultasi
     Route::post('/pengajuan-user/unggahPengajuan', [App\Http\Livewire\Form::class, 'store'])->name('pengajuan.store');
     Route::get('/pengajuan-konsultasi/simpan', [App\Http\Controllers\konsultasiController::class, 'store'])->name('pengajuan.konsultasi');
+    Route::put('/pengajuan-konsultasi/batal/{id}', [App\Http\Controllers\konsultasiController::class, 'update'])->name('pengajuan.konsultasi.batal');
 
 });

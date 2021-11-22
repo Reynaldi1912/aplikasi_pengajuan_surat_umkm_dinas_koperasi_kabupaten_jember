@@ -36,6 +36,12 @@
         <p>Silahkan Datang ke Diskopum Jember Pada :</p>
         <p>Hari : {{$day}} / {{$date}}</p>     
         <p>Sesi , Jam : {{$konsultasi->sesi_konsultasi}} WIB</p>
+        <form action="{{route('pengajuan.konsultasi.batal', $konsultasi->id_konsultasi)}}" method="POST">
+            @method('PUT')
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="action" value="batal">
+            <button class="btn btn-danger" type="submit">Batalkan Konsultasi</button>
+        </form>
     </div>
 </body>
 </html>
