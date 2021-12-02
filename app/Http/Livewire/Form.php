@@ -12,8 +12,6 @@ use App\Models\nilai_usaha;
 use Illuminate\Http\Request;
 use Livewire\WithFileUploads;
 
-
-
 class Form extends Component
 {
     use WithFileUploads;
@@ -26,18 +24,18 @@ class Form extends Component
 
     public function firstStepSubmit()
     {
-      
-        $validatedData = $this->validate([
+         $validatedData = $this->validate([
             'nama_lengkap' => 'required',
             'nama_dusun' => 'required',
             'nama_kelurahan' => 'required',
             'nama_kecamatan' => 'required',
-            'telp' =>'required'
+            'telp' =>'required|numeric',
+            'Nik' => 'required|numeric|starts_with:3509'
         ]);            
 
         $this->currentStep = 2;
     }
-  
+
     public function secondStepSubmit()
     {
 

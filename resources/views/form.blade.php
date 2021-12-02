@@ -82,13 +82,25 @@
                 <div class="col"></div>
 
             </div>
-
             <div class="mb-3 row">
                 <div class="col"></div>
                 <div class="col-10">
                     <p>Nomor Telepon</p>
-                    <input placeholder="Masukan Nama Kecamatan" type="text" wire:model="telp" class="form-control {{$errors->first('telp') ? "is-invalid" : "" }}" id="telp">
+                    <input placeholder="Masukkan Nomor Telepon" type="text" wire:model="telp" class="form-control {{$errors->first('telp') ? "is-invalid" : "" }}" id="telp">
                     @error('telp')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>  
+                <div class="col"></div>
+
+            <div class="mb-3 row">
+                <div class="col"></div>
+                <div class="col-10">
+                    <p>NIK</p>
+                    <input placeholder="Masukkan NIK" type="text" wire:model="Nik" class="form-control {{$errors->first('Nik') ? "is-invalid" : "" }}" id="Nik">
+                    @error('nik')
                     <div class="invalid-feedback">
                         {{ $message }}
                     </div>
