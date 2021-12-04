@@ -10,7 +10,8 @@ use Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\konsultasiDiterima;
 use App\Mail\konsultasiDitolak;
-
+use App\Mail\konsultasiPelanggaran;
+use Carbon\Carbon;
 
 class konsultasiController extends Controller
 {
@@ -32,8 +33,29 @@ class konsultasiController extends Controller
         $title = "Pengajuan";
         $path = array("Konsultasi","Pengajuan");
         $path_link = array(route('list-konsultasi'),route('list-konsultasi'));
-        $list_konsultasi = konsultasi::all()->where('status_konsultasi','terima')
-                                            ->where('tanggal_pengajuan',date("Y-m-d"));
+        $list_konsultasi = konsultasi::all()->where('status_konsultasi','terima')->where('tanggal_pengajuan',date("Y-m-d"));
+        
+        $count = konsultasi::all()->where('status_konsultasi','terima')->where('tanggal_pengajuan',date("Y-m-d", strtotime( '-1 days' )))->count();
+        while ($count > 0) {
+            $list_konsultasi_tidak_hadir = konsultasi::with('User')->where('status_konsultasi','terima')->where('tanggal_pengajuan',date("Y-m-d", strtotime( '-1 days' )))->first();
+            $list_konsultasi_tidak_hadir->status_konsultasi = 'tidak_hadir';
+            $list_konsultasi_tidak_hadir->save();
+            
+            $currentuserid  = Auth::user()->id;
+            $konsultasi = konsultasi::with('User')->where('users_id',$currentuserid)->first();
+            $day = date('l',strtotime($konsultasi->tanggal_pengajuan));
+            $date = date('d F Y', strtotime($konsultasi->tanggal_pengajuan));
+
+            $tanggal_konsultasi = Carbon::createFromFormat('Y-m-d H:i:s', $konsultasi->updated_at);
+            $daysToAdd = 14;
+            $date_next = $tanggal_konsultasi->addDays($daysToAdd)->format('d F Y');
+            $day_next = date('l',strtotime($date_next));
+            
+            Mail::to($konsultasi->User->email)->send(new konsultasiPelanggaran($day,$date,$day_next,$date_next,$konsultasi));
+            
+            $count -1;
+        }
+        
         return view('konsultasi.konsultasi-hari-ini',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'list_konsultasi'=>$list_konsultasi]);
     }
 
@@ -74,10 +96,28 @@ class konsultasiController extends Controller
         return redirect()->route('form-konsultasi')->with('success','Pengajuan Anda Telah Diajukan');
     }
     public function form(){
+        $currentuserid  = Auth::user()->id;
         $title = "Konsultasi";
         $path = array("Dashboard","Konsultasi");
         $path_link = array(route('home'),route('form-konsultasi'));
-        return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link]);
+        $pelanggaran = 'tidak';
+        $cek_tidak_hadir = konsultasi::with('User')->where('users_id',$currentuserid)->where('status_konsultasi','tidak_hadir')->count();
+        
+        
+        if ($cek_tidak_hadir > 0) {
+            $pelanggaran = 'ya';
+            $get_tidak_hadir = konsultasi::with('User')->where('users_id',$currentuserid)->where('status_konsultasi','tidak_hadir')->first();
+            $tanggal_konsultasi = Carbon::createFromFormat('Y-m-d H:i:s', $get_tidak_hadir->updated_at);
+            $daysToAdd = 14;
+            $tanggal_konsultasi_selanjutnya = $tanggal_konsultasi->addDays($daysToAdd)->format('d F Y');
+            $mytime = Carbon::now();
+            $different_days = $mytime->diffInDays($tanggal_konsultasi_selanjutnya);
+            $different_days = $different_days+1;
+
+            return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,'different'=>$different_days]);
+        }
+        
+        return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran]);
     }
 
     /**
