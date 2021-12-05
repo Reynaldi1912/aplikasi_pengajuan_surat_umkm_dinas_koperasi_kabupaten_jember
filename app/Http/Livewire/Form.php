@@ -30,7 +30,10 @@ class Form extends Component
             'nama_kelurahan' => 'required',
             'nama_kecamatan' => 'required',
             'telp' =>'required|numeric',
-            'Nik' => 'required|numeric|starts_with:3509'
+            'nik' => 'required|numeric|starts_with:3509|digits_between:16,16'
+        ],[
+            'nik.starts_with' => 'Pemilik Usaha Harus ber NIK Jember',
+            'nik.digits_between' => 'NIK harus 16 Angka'  
         ]);            
 
         $this->currentStep = 2;

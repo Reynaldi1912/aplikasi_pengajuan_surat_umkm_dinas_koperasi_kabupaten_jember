@@ -95,11 +95,11 @@
                 </div>  
                 <div class="col"></div>
 
-            <div class="mb-3 row">
+            <div class="mb-3 mt-3 row">
                 <div class="col"></div>
                 <div class="col-10">
                     <p>NIK</p>
-                    <input placeholder="Masukkan NIK" type="text" wire:model="Nik" class="form-control {{$errors->first('Nik') ? "is-invalid" : "" }}" id="Nik">
+                    <input placeholder="Masukkan NIK" type="text" wire:model="nik" class="form-control {{$errors->first('nik') ? "is-invalid" : "" }}" id="nik">
                     @error('nik')
                     <div class="invalid-feedback">
                         {{ $message }}
