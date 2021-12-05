@@ -102,7 +102,7 @@ class konsultasiController extends Controller
         $path_link = array(route('home'),route('form-konsultasi'));
         $pelanggaran = 'tidak';
         $cek_tidak_hadir = konsultasi::with('User')->where('users_id',$currentuserid)->where('status_konsultasi','tidak_hadir')->count();
-        
+        $cek_next_konsul = konsultasi::with('User')->Where('users_id',$currentuserid)->where('status_konsultasi','menunggu_konsul_selanjutnya')->count();
         
         if ($cek_tidak_hadir > 0) {
             $pelanggaran = 'ya';
@@ -116,9 +116,23 @@ class konsultasiController extends Controller
 
             return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,'different'=>$different_days]);
         }
+//Pembatasan Konsul
+        if ($cek_tidak_hadir <= 0 && $cek_next_konsul > 0) {
+            $pelanggaran = 'menunggu_next_konsul';
+            $get_user = konsultasi::with('User')->where('users_id',$currentuserid)->where('status_konsultasi','menunggu_konsul_selanjutnya')->first();
+            $tanggal_konsultasi = Carbon::createFromFormat('Y-m-d H:i:s', $get_user->updated_at);
+            $daysToAdd = 7;
+            $tanggal_konsultasi_selanjutnya = $tanggal_konsultasi->addDays($daysToAdd)->format('d F Y');
+            $mytime = Carbon::now();
+            $different_days = $mytime->diffInDays($tanggal_konsultasi_selanjutnya);
+            $different_days = $different_days+1;
+    
+            return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,'different'=>$different_days]);
+        }
         
-        return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran]);
+        // return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran]);
     }
+    
 
     /**
      * Display the specified resource.
@@ -172,7 +186,8 @@ class konsultasiController extends Controller
     {
 
         $k = konsultasi::all()->where('id_konsultasi',$id)->first();
-        $k->status_konsultasi = 'selesai_konsul';
+        $k->status_konsultasi = 'menunggu_konsul_selanjutnya';
+
         $k->save();
         
         return redirect()->route('list-konsultasi-hari-ini')->with('success',' Sesi '. $k->sesi_konsultasi .' untuk '. $k->nama_pengaju);;

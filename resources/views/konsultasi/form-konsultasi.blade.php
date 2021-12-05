@@ -36,6 +36,30 @@
             </div>
             <div class="col"></div>
         </div>
+    
+    //Pembatasan Konsultasi
+    @elseif ($pelanggaran == 'menunggu_next_konsul')
+        <div class="container row pt-5">
+            <div class="col"></div>
+            <div class="col-8">
+                <div class="row text-center">
+                    <p style="color: #C23436">Konsultasi Dilakukan 7 Hari Sekali, Sebelumnya Anda Telah Melakukan Konsultasi , Konsultasi Akan Terbuka Pada : </p>
+                    <p style="color: #C23436"><b>{{$next}}</b></p>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card align-items-center" style="background-color: rgba(194,52,54, 1.0);margin-right: 50px;margin-left: 50px;padding : 5%;color: white;">
+                            <h4><b>{{$different}}</b></h4>
+                            <p>Hari Lagi</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+            </div>
+            <div class="col"></div>
     @else
         <div class="container row pt-5">
             <div class="col"></div>
