@@ -181,6 +181,15 @@ class konsultasiController extends Controller
         return back()->with('success', "$day , $date");;
     }
 
+    public function batalkan_konsultasi($id){
+        $konsultasi = konsultasi::findOrFail($id);
+        $konsultasi->update([
+            'status_konsultasi' => 'batal_konsul'
+        ]);
+        return redirect()->route('form-konsultasi')
+            ->with('success','Pengajuan Konsultasi Anda Telah Dibatalkan');
+    }
+
     /**
      * Remove the specified resource from storage.
      *
