@@ -13,9 +13,6 @@
                         <p style="font-size:20px" class="text-start"><b>Data Diri</b></p>                    
                     </div>
                     <div class="col">
-                        <div class="checkbox">
-                            <p class="text-right mt-2">Semua Data Sudah Benar <input type="checkbox" value=""></p>
-                        </div>
                     </div>
                 </div>
                 <hr class="mt-0">
@@ -83,9 +80,6 @@
                         <p style="font-size:20px" class="text-start"><b>Berkas</b></p>                    
                     </div>
                     <div class="col">
-                        <div class="checkbox">
-                            <p class="text-right mt-1">Semua Data Sudah Benar &nbsp<input type="checkbox" ></p>
-                        </div>
                     </div>
                 </div>
                 <hr class="mt-0">
@@ -188,9 +182,6 @@
                         <p style="font-size:20px" class="text-start"><b>Informasi Usaha</b></p>                    
                     </div>
                     <div class="col">
-                        <div class="checkbox">
-                            <p class="text-right mt-1">Semua Data Sudah Benar &nbsp<input type="checkbox" value=""></p>
-                        </div>
                     </div>
                 </div>
                 <hr class="mt-0">

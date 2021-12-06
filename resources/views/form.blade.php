@@ -114,8 +114,8 @@
                 <div class="col text-end"> <button class="btn btn-danger" wire:click="firstStepSubmit" type="submit"
                 type="button">Berikutnya</button></div>
             </div>
-            
         </div>
+    </div>
 
         {{-- Step 2 --}}
         <div id="step2" style="display: {{ $currentStep != 2 ? 'none' : '' }}">
