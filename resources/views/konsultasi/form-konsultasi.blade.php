@@ -16,9 +16,15 @@
             <h3>
             @isset($konsultasi) 
                 @if($konsultasi->status_konsultasi == 'terima')
-                    <i class="fa fa-pencil-alt"></i> &nbsp; Anda Telah Mendaftar Konsultasi 
+                    <p> <i class="fa fa-pencil-alt"></i> &nbsp; Anda Telah Mendaftar Konsultasi </p>
                 @elseif($konsultasi->status_konsultasi == 'pending') 
-                    <i class="fa fa-clock"></i> &nbsp; Pengajuan Konsultasi anda sedang menunggu Konfirmasi 
+                    <p> <i class="fa fa-clock"></i> &nbsp; Pengajuan Konsultasi anda sedang menunggu Konfirmasi </p>
+                    <form action="{{route('pengajuan.konsultasi.batal', $konsultasi->id_konsultasi)}}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="action" value="batal">
+                        <button class="btn btn-danger" type="submit">Batalkan Konsultasi</button>
+                    </form> 
                 @endif 
             @endisset</h3>
             <p>Sesi {{ $konsultasi->sesi_konsultasi }} {{Carbon\Carbon::parse($konsultasi->tanggal_pengajuan)->format('D, d M y')}}</p>
