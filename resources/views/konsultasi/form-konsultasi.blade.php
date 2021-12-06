@@ -4,12 +4,41 @@
     @if ($message = Session::get('success'))
     <div class="container">
         <div class="alert alert-success">
-            <h3><i class="fa fa-check-circle"></i> &nbsp;Konsultasi Telah Diajukan</h3>
+            <h3><i class="fa fa-check-circle"></i> &nbsp;{{$message}}</h3>
             <p>&emsp;&ensp;Konsultasi <b>{{$message}}</b></p>
         </div>
     </div>
     @endif
 
+    @if($active)
+    <div class="container">
+        <div class="alert bg-white">
+            <h3>
+            @isset($konsultasi) 
+                @if($konsultasi->status_konsultasi == 'terima')
+                    <p> <i class="fa fa-pencil-alt"></i> &nbsp; Anda Telah Mendaftar Konsultasi </p>
+                @elseif($konsultasi->status_konsultasi == 'pending') 
+                    <p> <i class="fa fa-clock"></i> &nbsp; Pengajuan Konsultasi anda sedang menunggu Konfirmasi </p>
+                    <form action="{{route('pengajuan.konsultasi.batal', $konsultasi->id_konsultasi)}}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="action" value="batal">
+                        <button class="btn btn-danger" type="submit">Batalkan Konsultasi</button>
+                    </form> 
+                @endif 
+            @endisset</h3>
+            <p>Sesi {{ $konsultasi->sesi_konsultasi }} {{Carbon\Carbon::parse($konsultasi->tanggal_pengajuan)->format('D, d M y')}}</p>
+            @if($konsultasi->status_konsultasi == 'terima')
+            <form action="{{route('pengajuan.konsultasi.batal', $konsultasi->id_konsultasi)}}" method="POST">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="action" value="batal">
+                <button class="btn btn-danger" type="submit">Batalkan Konsultasi</button>
+            </form>
+            @endif
+        </div>
+    </div>
+    @else
     <form action="{{route('pengajuan.konsultasi')}}" method="GET">
         @csrf
 
@@ -119,5 +148,6 @@
                 </div>
             </div>
         </div>
+    </div>
     @endif
 @endsection

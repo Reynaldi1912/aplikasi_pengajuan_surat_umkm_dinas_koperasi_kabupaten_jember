@@ -36,6 +36,7 @@
         <p>Silahkan Datang ke Diskopum Jember Pada :</p>
         <p>Hari : {{$day}} / {{$date}}</p>     
         <p>Sesi , Jam : {{$konsultasi->sesi_konsultasi}} WIB</p>
+        <a href="{{route('batalkan-konsultasi', $konsultasi->id_konsultasi)}}" class="btn btn-danger">Batalkan Konsultasi</a>
     </div>
 </body>
 </html>
