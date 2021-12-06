@@ -12,8 +12,6 @@ use App\Models\nilai_usaha;
 use Illuminate\Http\Request;
 use Livewire\WithFileUploads;
 
-
-
 class Form extends Component
 {
     use WithFileUploads;
@@ -26,18 +24,21 @@ class Form extends Component
 
     public function firstStepSubmit()
     {
-      
-        $validatedData = $this->validate([
+         $validatedData = $this->validate([
             'nama_lengkap' => 'required',
             'nama_dusun' => 'required',
             'nama_kelurahan' => 'required',
             'nama_kecamatan' => 'required',
-            'telp' =>'required'
+            'telp' =>'required|numeric',
+            'nik' => 'required|numeric|starts_with:3509|digits_between:16,16'
+        ],[
+            'nik.starts_with' => 'Pemilik Usaha Harus ber NIK Jember',
+            'nik.digits_between' => 'NIK harus 16 Angka'  
         ]);            
 
         $this->currentStep = 2;
     }
-  
+
     public function secondStepSubmit()
     {
 
