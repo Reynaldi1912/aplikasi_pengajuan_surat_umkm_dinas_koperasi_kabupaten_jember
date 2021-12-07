@@ -34,13 +34,14 @@ class konsultasiController extends Controller
         $path = array("Konsultasi","Pengajuan");
         $path_link = array(route('list-konsultasi'),route('list-konsultasi'));
         $list_konsultasi = konsultasi::all()->where('status_konsultasi','terima')->where('tanggal_pengajuan',date("Y-m-d"));
-        
+
         $count = konsultasi::all()->where('status_konsultasi','terima')->where('tanggal_pengajuan',date("Y-m-d", strtotime( '-1 days' )))->count();
-        while ($count > 0) {
+        for ($i=0; $i < $count ; $i++) { 
             $list_konsultasi_tidak_hadir = konsultasi::with('User')->where('status_konsultasi','terima')->where('tanggal_pengajuan',date("Y-m-d", strtotime( '-1 days' )))->first();
             $list_konsultasi_tidak_hadir->status_konsultasi = 'tidak_hadir';
             $list_konsultasi_tidak_hadir->save();
-            
+        }
+           
             // $currentuserid  = Auth::user()->id;
             // $konsultasi = konsultasi::with('User')->where('users_id',$currentuserid)->first();
             // $day = date('l',strtotime($konsultasi->tanggal_pengajuan));
@@ -52,10 +53,7 @@ class konsultasiController extends Controller
             // $day_next = date('l',strtotime($date_next));
             
             // Mail::to($konsultasi->User->email)->send(new konsultasiPelanggaran($day,$date,$day_next,$date_next,$konsultasi));
-            
-            $count -1;
-        }
-        
+                    
         return view('konsultasi.konsultasi-hari-ini',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'list_konsultasi'=>$list_konsultasi]);
     }
 
@@ -130,7 +128,8 @@ class konsultasiController extends Controller
 
             Mail::to($get_tidak_hadir->User->email)->send(new konsultasiPelanggaran($day,$date,$day_next,$date_next,$konsultasi));
 
-            return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,'different'=>$different_days]);
+            return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,'different'=>$different_days,'active' => ($status) ? true : false,
+            'konsultasi' => ($status) ? $status : null]);
         }
 //Pembatasan Konsul
         if ($cek_tidak_hadir <= 0 && $cek_next_konsul > 0) {
