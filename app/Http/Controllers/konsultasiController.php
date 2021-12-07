@@ -6,12 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\konsultasi;
 use App\Models\konsultasi_ditolak;
 use App\Models\User;
-use Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\konsultasiDiterima;
 use App\Mail\konsultasiDitolak;
-use App\Mail\konsultasiPelanggaran;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth as Auth;
+use App\Mail\konsultasiPelanggaran;
 
 class konsultasiController extends Controller
 {
@@ -102,7 +102,12 @@ class konsultasiController extends Controller
         $path_link = array(route('home'),route('form-konsultasi'));
         $pelanggaran = 'tidak';
         $cek_tidak_hadir = konsultasi::with('User')->where('users_id',$currentuserid)->where('status_konsultasi','tidak_hadir')->count();
-        
+        $cek_next_konsul = konsultasi::with('User')->Where('users_id',$currentuserid)->where('status_konsultasi','menunggu_konsul_selanjutnya')->count();
+
+        $status = konsultasi::where('users_id', Auth::id())
+        ->where('tanggal_pengajuan', '>=', Carbon::today())
+        ->whereIn('status_konsultasi', ['pending', 'terima'])
+        ->first();
         
         if ($cek_tidak_hadir > 0) {
             $pelanggaran = 'ya';
@@ -127,9 +132,27 @@ class konsultasiController extends Controller
 
             return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,'different'=>$different_days]);
         }
-        
-        return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran]);
+//Pembatasan Konsul
+        if ($cek_tidak_hadir <= 0 && $cek_next_konsul > 0) {
+            $pelanggaran = 'menunggu_next_konsul';
+            $get_user = konsultasi::with('User')->where('users_id',$currentuserid)->where('status_konsultasi','menunggu_konsul_selanjutnya')->first();
+            $tanggal_konsultasi = Carbon::createFromFormat('Y-m-d H:i:s', $get_user->updated_at);
+            $daysToAdd = 7;
+            $tanggal_konsultasi_selanjutnya = $tanggal_konsultasi->addDays($daysToAdd)->format('d F Y');
+            $mytime = Carbon::now();
+            $different_days = $mytime->diffInDays($tanggal_konsultasi_selanjutnya);
+            $different_days = $different_days+1;
+    
+            return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,'different'=>$different_days,'active' => ($status) ? true : false,
+            'konsultasi' => ($status) ? $status : null]);
+        }
+      
+        return view('konsultasi.form-konsultasi',
+        ['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,
+        'active' => ($status) ? true : false,
+        'konsultasi' => ($status) ? $status : null]);
     }
+    
 
     /**
      * Display the specified resource.
@@ -183,7 +206,8 @@ class konsultasiController extends Controller
     {
 
         $k = konsultasi::all()->where('id_konsultasi',$id)->first();
-        $k->status_konsultasi = 'selesai_konsul';
+        $k->status_konsultasi = 'menunggu_konsul_selanjutnya';
+
         $k->save();
         
         return redirect()->route('list-konsultasi-hari-ini')->with('success',' Sesi '. $k->sesi_konsultasi .' untuk '. $k->nama_pengaju);;
@@ -199,6 +223,15 @@ class konsultasiController extends Controller
     public function update(Request $request, $id)
     {
         $konsultasi = konsultasi::with('User')->where('id_konsultasi',$id)->first();
+
+        if($request->action == 'batal'){
+            $konsultasi->update([
+                'status_konsultasi' => 'batal_konsul'
+            ]);
+
+            return redirect()->route('form-konsultasi')
+                ->with('success','Pengajuan Konsultasi Anda Telah Dibatalkan');
+        }
         
         $konsultasi->status_konsultasi = $request->get('stts_konsul');
         $konsultasi->save();
@@ -209,6 +242,15 @@ class konsultasiController extends Controller
         Mail::to($konsultasi->User->email)->send(new konsultasiDiterima($day,$date,$konsultasi));
 
         return back()->with('success', "$day , $date");;
+    }
+
+    public function batalkan_konsultasi($id){
+        $konsultasi = konsultasi::findOrFail($id);
+        $konsultasi->update([
+            'status_konsultasi' => 'batal_konsul'
+        ]);
+        return redirect()->route('form-konsultasi')
+            ->with('success','Pengajuan Konsultasi Anda Telah Dibatalkan');
     }
 
     /**

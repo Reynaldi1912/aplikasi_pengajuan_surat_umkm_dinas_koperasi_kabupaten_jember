@@ -19,6 +19,7 @@ Auth::routes();
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class,'logout'])->name('logout');
+Route::get('/batalkan-konsultasi/{id}', [App\Http\Controllers\konsultasiController::class, 'batalkan_konsultasi'])->name('batalkan-konsultasi');
 
 
 Route::group(['middleware'=>['cekLevelAdmin']], function(){
@@ -54,5 +55,6 @@ Route::group(['middleware'=>['cekLevelUser']], function(){
     //Pengajuan Konsultasi
     Route::post('/pengajuan-user/unggahPengajuan', [App\Http\Livewire\Form::class, 'store'])->name('pengajuan.store');
     Route::get('/pengajuan-konsultasi/simpan', [App\Http\Controllers\konsultasiController::class, 'store'])->name('pengajuan.konsultasi');
+    Route::put('/pengajuan-konsultasi/batal/{id}', [App\Http\Controllers\konsultasiController::class, 'update'])->name('pengajuan.konsultasi.batal');
 
 });

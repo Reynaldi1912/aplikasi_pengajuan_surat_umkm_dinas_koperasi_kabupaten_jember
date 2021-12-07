@@ -82,13 +82,25 @@
                 <div class="col"></div>
 
             </div>
-
             <div class="mb-3 row">
                 <div class="col"></div>
                 <div class="col-10">
                     <p>Nomor Telepon</p>
-                    <input placeholder="Masukan Nama Kecamatan" type="text" wire:model="telp" class="form-control {{$errors->first('telp') ? "is-invalid" : "" }}" id="telp">
+                    <input placeholder="Masukkan Nomor Telepon" type="text" wire:model="telp" class="form-control {{$errors->first('telp') ? "is-invalid" : "" }}" id="telp">
                     @error('telp')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>  
+                <div class="col"></div>
+
+            <div class="mb-3 mt-3 row">
+                <div class="col"></div>
+                <div class="col-10">
+                    <p>NIK</p>
+                    <input placeholder="Masukkan NIK" type="text" wire:model="nik" class="form-control {{$errors->first('nik') ? "is-invalid" : "" }}" id="nik">
+                    @error('nik')
                     <div class="invalid-feedback">
                         {{ $message }}
                     </div>
@@ -102,8 +114,8 @@
                 <div class="col text-end"> <button class="btn btn-danger" wire:click="firstStepSubmit" type="submit"
                 type="button">Berikutnya</button></div>
             </div>
-            
         </div>
+    </div>
 
         {{-- Step 2 --}}
         <div id="step2" style="display: {{ $currentStep != 2 ? 'none' : '' }}">
