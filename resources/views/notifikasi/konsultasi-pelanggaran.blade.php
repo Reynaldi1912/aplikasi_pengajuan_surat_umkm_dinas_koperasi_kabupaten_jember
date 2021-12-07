@@ -30,7 +30,7 @@
 </head>
 <body>
     <div class="card">
-        <h3 class="">Halo {{$konsultasi->nama_pengaju}}</h3>
+        <h3>Halo {{$konsultasi->nama_pengaju}}</h3>
         <hr class="garis">
         <p><b>Anda Tidak Hadir pada Sesi Konsultasi Usaha</b></p>
         <p>Hari/tanggal : {{$day}} / {{$date}}</p>

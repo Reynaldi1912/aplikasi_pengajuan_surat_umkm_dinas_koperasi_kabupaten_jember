@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 class konsultasiPelanggaran extends Mailable
 {
     use Queueable, SerializesModels;
+    public $day , $date ,$day_next,$date_next,$konsultasi;
 
     /**
      * Create a new message instance.
