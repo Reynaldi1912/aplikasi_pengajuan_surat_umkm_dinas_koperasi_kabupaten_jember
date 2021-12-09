@@ -66,7 +66,7 @@
             <div class="col"></div>
         </div>
     
-    //Pembatasan Konsultasi
+    <!-- Pembatasan Konsultasi -->
     @elseif ($pelanggaran == 'menunggu_next_konsul')
         <div class="container row pt-5">
             <div class="col"></div>
@@ -117,9 +117,13 @@
                             </div>
                             @enderror
                     </div>
+                   
                     <div class="col-6">
                             <label for="sesi" class="form-label">Tanggal Konsultasi</label>
-                            <input type="date"  name="tanggal_konsultasi"  class="form-control {{$errors->first('tanggal_konsultasi') ? "is-invalid" : "" }}" id="tanggal_konsultasi">
+                            <?php
+                                $x = date("Y-m-d");
+                            ?>
+                            <input type="date" name="tanggal_konsultasi" class="form-control {{$errors->first('tanggal_konsultasi') ? "is-invalid" : "" }}" id="tanggal_konsultasi" min={{$x}}>
                             @error('tanggal_konsultasi')
                             <div class="invalid-feedback">
                                 {{ $message }}
@@ -149,6 +153,7 @@
             </div>
         </div>
     </div>
+    
     @endif
     @endif
 @endsection
