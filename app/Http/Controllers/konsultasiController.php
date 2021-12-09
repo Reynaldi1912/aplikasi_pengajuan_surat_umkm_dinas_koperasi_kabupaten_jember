@@ -105,27 +105,24 @@ class konsultasiController extends Controller
         
         
         if ($cek_tidak_hadir > 0) {
+            $mytime = Carbon::now();
             $pelanggaran = 'ya';
             $get_tidak_hadir = konsultasi::with('User')->where('users_id',$currentuserid)->where('status_konsultasi','tidak_hadir')->first();
             $tanggal_konsultasi = Carbon::createFromFormat('Y-m-d H:i:s', $get_tidak_hadir->updated_at);
             $daysToAdd = 14;
             $tanggal_konsultasi_selanjutnya = $tanggal_konsultasi->addDays($daysToAdd)->format('d F Y');
-            $mytime = Carbon::now();
             $different_days = $mytime->diffInDays($tanggal_konsultasi_selanjutnya);
-            $different_days = $different_days+1;
+            if ($different_days>0) {
+                $day = date('l',strtotime($get_tidak_hadir->tanggal_pengajuan));
+                $date = date('d F Y', strtotime($get_tidak_hadir->tanggal_pengajuan));
+                $day_next = date('l',strtotime($tanggal_konsultasi_selanjutnya));
 
-            $konsultasi = konsultasi::with('User')->where('users_id',$currentuserid)->first();
-            $day = date('l',strtotime($konsultasi->tanggal_pengajuan));
-            $date = date('d F Y', strtotime($konsultasi->tanggal_pengajuan));
+                Mail::to($get_tidak_hadir->User->email)->send(new konsultasiPelanggaran($day,$date,$day_next,$tanggal_konsultasi_selanjutnya,$get_tidak_hadir));
 
-            $tanggal_konsultasi = Carbon::createFromFormat('Y-m-d H:i:s', $konsultasi->updated_at);
-            $daysToAdd = 14;
-            $date_next = $tanggal_konsultasi->addDays($daysToAdd)->format('d F Y');
-            $day_next = date('l',strtotime($date_next));
-
-            Mail::to($get_tidak_hadir->User->email)->send(new konsultasiPelanggaran($day,$date,$day_next,$date_next,$konsultasi));
-
-            return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,'different'=>$different_days]);
+                return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,'different'=>$different_days]);
+            }
+            $pelanggaran = 'tidak';
+            return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran]);   
         }
         
         return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran]);

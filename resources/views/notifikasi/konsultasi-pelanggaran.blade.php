@@ -35,7 +35,7 @@
         <p><b>Anda Tidak Hadir pada Sesi Konsultasi Usaha</b></p>
         <p>Hari/tanggal : {{$day}} / {{$date}}</p>
         <p>Sesi, Jam : {{$konsultasi->sesi_konsultasi}} WIB</p>   
-        <p style="color: #ff0000">Oleh karena itu, anda tidak bisa mendaftarkan konsultasi, terhitung dari hari ini sampai <b>{{$day}}, {{$date}}</b></p>
+        <p style="color: #ff0000">Oleh karena itu, anda tidak bisa mendaftarkan konsultasi, terhitung dari hari ini sampai <b>{{$day}}, {{$date_next}}</b></p>
     </div>
 </body>
 </html>
