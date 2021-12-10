@@ -111,20 +111,27 @@ class konsultasiController extends Controller
             $mytime = Carbon::now();
             $pelanggaran = 'ya';
             $get_tidak_hadir = konsultasi::with('User')->where('users_id',$currentuserid)->where('status_konsultasi','tidak_hadir')->first();
+            $tanggal_cek_konsultasi = Carbon::createFromFormat('Y-m-d H:i:s', $get_tidak_hadir->updated_at);
             $tanggal_konsultasi = Carbon::createFromFormat('Y-m-d H:i:s', $get_tidak_hadir->updated_at);
             $daysToAdd = 14;
+            $check_date_konsultasi = $tanggal_cek_konsultasi->addDays($daysToAdd)->format('Y-m-d');
             $tanggal_konsultasi_selanjutnya = $tanggal_konsultasi->addDays($daysToAdd)->format('d F Y');
             $different_days = $mytime->diffInDays($tanggal_konsultasi_selanjutnya);
-            if ($different_days>0) {
+
+            if (strtotime(date("Y-m-d")) < strtotime($check_date_konsultasi)) {
+                
                 $day = date('l',strtotime($get_tidak_hadir->tanggal_pengajuan));
                 $date = date('d F Y', strtotime($get_tidak_hadir->tanggal_pengajuan));
                 $day_next = date('l',strtotime($tanggal_konsultasi_selanjutnya));
 
                 Mail::to($get_tidak_hadir->User->email)->send(new konsultasiPelanggaran($day,$date,$day_next,$tanggal_konsultasi_selanjutnya,$get_tidak_hadir));
 
-                return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,'different'=>$different_days]);
+
+                return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,
+                'different'=>$different_days,'active' => ($status) ? true : false,
+                'konsultasi' => ($status) ? $status : null]);
             }
-         
+            $pelanggaran = 'tidak';
             return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,'different'=>$different_days,'active' => ($status) ? true : false,
             'konsultasi' => ($status) ? $status : null]);
         }
