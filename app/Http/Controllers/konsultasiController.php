@@ -54,6 +54,7 @@ class konsultasiController extends Controller
             
             // Mail::to($konsultasi->User->email)->send(new konsultasiPelanggaran($day,$date,$day_next,$date_next,$konsultasi));
                     
+            // return $;
         return view('konsultasi.konsultasi-hari-ini',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'list_konsultasi'=>$list_konsultasi]);
     }
 
@@ -94,6 +95,9 @@ class konsultasiController extends Controller
         return redirect()->route('form-konsultasi')->with('success','Pengajuan Anda Telah Diajukan');
     }
     public function form(){
+        $different_days = null;
+        $tanggal_konsultasi_selanjutnya = null;
+
         $currentuserid  = Auth::user()->id;
         $title = "Konsultasi";
         $path = array("Dashboard","Konsultasi");
@@ -126,17 +130,17 @@ class konsultasiController extends Controller
 
                 Mail::to($get_tidak_hadir->User->email)->send(new konsultasiPelanggaran($day,$date,$day_next,$tanggal_konsultasi_selanjutnya,$get_tidak_hadir));
 
-
                 return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,
                 'different'=>$different_days,'active' => ($status) ? true : false,
                 'konsultasi' => ($status) ? $status : null]);
+            }else{
+                $get_tidak_hadir = konsultasi::with('User')->where('users_id',$currentuserid)->where('status_konsultasi','tidak_hadir')->first();
+                $get_tidak_hadir->status_konsultasi = "selesai_konsul";
+                $get_tidak_hadir->save();
             }
-            $pelanggaran = 'tidak';
-            return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,'different'=>$different_days,'active' => ($status) ? true : false,
-            'konsultasi' => ($status) ? $status : null]);
         }
-//Pembatasan Konsul
-        if ($cek_tidak_hadir <= 0 && $cek_next_konsul > 0) {
+
+        if ($cek_next_konsul > 0) {
             $pelanggaran = 'menunggu_next_konsul';
             $get_user = konsultasi::with('User')->where('users_id',$currentuserid)->where('status_konsultasi','menunggu_konsul_selanjutnya')->first();
             $tanggal_konsultasi = Carbon::createFromFormat('Y-m-d H:i:s', $get_user->updated_at);
@@ -149,10 +153,12 @@ class konsultasiController extends Controller
             return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,'different'=>$different_days,'active' => ($status) ? true : false,
             'konsultasi' => ($status) ? $status : null]);
         }
-      
-        return view('konsultasi.form-konsultasi',
-        ['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,
-        'active' => ($status) ? true : false,
+
+        if($cek_next_konsul <= 0 && $cek_tidak_hadir <= 0){
+            $pelanggaran = "tidak";
+        }
+
+        return view('konsultasi.form-konsultasi',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pelanggaran'=>$pelanggaran,'next'=>$tanggal_konsultasi_selanjutnya,'different'=>$different_days,'active' => ($status) ? true : false,
         'konsultasi' => ($status) ? $status : null]);
     }
     
