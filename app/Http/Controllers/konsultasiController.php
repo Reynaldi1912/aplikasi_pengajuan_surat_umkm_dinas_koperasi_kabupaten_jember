@@ -154,6 +154,9 @@ class konsultasiController extends Controller
             'konsultasi' => ($status) ? $status : null]);
         }
 
+        $cek_tidak_hadir = konsultasi::with('User')->where('users_id',$currentuserid)->where('status_konsultasi','tidak_hadir')->count();
+        $cek_next_konsul = konsultasi::with('User')->Where('users_id',$currentuserid)->where('status_konsultasi','menunggu_konsul_selanjutnya')->count();
+        
         if($cek_next_konsul <= 0 && $cek_tidak_hadir <= 0){
             $pelanggaran = "tidak";
         }
