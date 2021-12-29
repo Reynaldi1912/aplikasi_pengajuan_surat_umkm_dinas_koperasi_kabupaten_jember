@@ -91,17 +91,17 @@ jobs:
 
       - name: 'Get Instance IP'
         run: |
-          echo "INSTANCE_IP=$( \
+          echo "INSTANCE_IP_A=$( \
             oci compute instance list-vnics \
             --instance-id ${{env.INSTANCE_OCID_A}} \
             --query 'data [0]."public-ip"' \
             --raw-output \
             )" >> $GITHUB_ENV
-          echo Instance IP: ${{ env.INSTANCE_IP }}
+          echo Instance IP: ${{ env.INSTANCE_IP_A }}
 
       - name: 'Wait for SSH'
         run: |
-          while ! nc -w5 -z ${{ env.INSTANCE_IP }} 22; do
+          while ! nc -w5 -z ${{ env.INSTANCE_IP_A }} 22; do
           sleep 5
           echo "SSH not available..."
           done; echo "SSH ready!"
@@ -109,7 +109,7 @@ jobs:
       - name: 'Deploy Deployment Configuration'
         uses: appleboy/scp-action@master
         with:
-          host: ${{ env.INSTANCE_IP }}
+          host: ${{ env.INSTANCE_IP_A }}
           username: opc
           key: ${{ secrets.OCI_KEY_FILE }}
           debug: false
@@ -119,7 +119,7 @@ jobs:
       - name: 'Install Docker Compose'
         uses: appleboy/ssh-action@master
         with:
-          host: ${{env.INSTANCE_IP}}
+          host: ${{env.INSTANCE_IP_A}}
           username: opc
           key: ${{secrets.OCI_KEY_FILE}}
           script: |
@@ -134,7 +134,7 @@ jobs:
       - name: 'Running Docker Compose'
         uses: appleboy/ssh-action@master
         with:
-          host: ${{env.INSTANCE_IP}}
+          host: ${{env.INSTANCE_IP_A}}
           username: opc
           key: ${{secrets.OCI_KEY_FILE}}
           script: |
@@ -146,7 +146,7 @@ jobs:
       - name: 'Install Dependency'
         uses: appleboy/ssh-action@master
         with:
-          host: ${{env.INSTANCE_IP}}
+          host: ${{env.INSTANCE_IP_A}}
           username: opc
           key: ${{secrets.OCI_KEY_FILE}}
           script: |
@@ -240,17 +240,17 @@ jobs:
 
       - name: 'Get Instance IP'
         run: |
-          echo "INSTANCE_IP=$( \
+          echo "INSTANCE_IP_B=$( \
             oci compute instance list-vnics \
             --instance-id ${{env.INSTANCE_OCID_B}} \
             --query 'data [0]."public-ip"' \
             --raw-output \
             )" >> $GITHUB_ENV
-          echo Instance IP: ${{ env.INSTANCE_IP }}
+          echo Instance IP: ${{ env.INSTANCE_IP_B }}
 
       - name: 'Wait for SSH'
         run: |
-          while ! nc -w5 -z ${{ env.INSTANCE_IP }} 22; do
+          while ! nc -w5 -z ${{ env.INSTANCE_IP_B }} 22; do
           sleep 5
           echo "SSH not available..."
           done; echo "SSH ready!"
@@ -258,7 +258,7 @@ jobs:
       - name: 'Deploy Deployment Configuration'
         uses: appleboy/scp-action@master
         with:
-          host: ${{ env.INSTANCE_IP }}
+          host: ${{ env.INSTANCE_IP_B }}
           username: opc
           key: ${{ secrets.OCI_KEY_FILE }}
           debug: false
@@ -268,7 +268,7 @@ jobs:
       - name: 'Install Docker Compose'
         uses: appleboy/ssh-action@master
         with:
-          host: ${{env.INSTANCE_IP}}
+          host: ${{env.INSTANCE_IP_B}}
           username: opc
           key: ${{secrets.OCI_KEY_FILE}}
           script: |
@@ -283,7 +283,7 @@ jobs:
       - name: 'Running Docker Compose'
         uses: appleboy/ssh-action@master
         with:
-          host: ${{env.INSTANCE_IP}}
+          host: ${{env.INSTANCE_IP_B}}
           username: opc
           key: ${{secrets.OCI_KEY_FILE}}
           script: |
@@ -295,7 +295,7 @@ jobs:
       - name: 'Install Dependency'
         uses: appleboy/ssh-action@master
         with:
-          host: ${{env.INSTANCE_IP}}
+          host: ${{env.INSTANCE_IP_B}}
           username: opc
           key: ${{secrets.OCI_KEY_FILE}}
           script: |
