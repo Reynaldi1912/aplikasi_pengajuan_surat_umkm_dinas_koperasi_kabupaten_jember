@@ -80,7 +80,7 @@ jobs:
             --shape ${{secrets.VM_SHAPE}} \
             --shape-config '{"memoryInGBs": 1, "ocpus": 1}' \
             --assign-public-ip true \
-            --display-name diskopum-b \
+            --display-name diskopum-a \
             --image-id ${{secrets.VM_CUSTOM_IMAGE_OCID}} \
             --ssh-authorized-keys-file /home/runner/.oci/oci_api_key_public.pem \
             --subnet-id ${{secrets.VM_SUBNET_OCID}} \
@@ -214,7 +214,7 @@ jobs:
             oci compute instance list \
             --lifecycle-state RUNNING \
             --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} \
-            --display-name diskopum-a \
+            --display-name diskopum-b \
             --query "data [0].id" \
             --raw-output \
             )" >> $GITHUB_ENV
