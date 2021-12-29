@@ -19,7 +19,6 @@
 <div class="login-box">
     <div class="login-logo">
         <a href="{{ url('/home') }}"><b>DISKOPUM JEMBER</b></a>
-        <p style="font-size: 10pt;">From: {{getHostName()}} @ {{request()->getHttpHost()}}</p>
     </div>
     <!-- /.login-logo -->
 

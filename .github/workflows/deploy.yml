@@ -21,6 +21,7 @@ jobs:
 
       - name: 'Setup Environment'
         run: |
+          echo 'APP_NAME="Diskopum A"' >> .env
           echo 'DB_HOST=${{secrets.DB_HOST}}' >> .env
           echo 'DB_DATABASE=${{secrets.DB_DATABASE}}' >> .env
           echo 'DB_USERNAME=${{secrets.DB_USERNAME}}' >> .env
@@ -170,6 +171,7 @@ jobs:
 
       - name: 'Setup Environment'
         run: |
+          echo 'APP_NAME="Diskopum B"' >> .env
           echo 'DB_HOST=${{secrets.DB_HOST}}' >> .env
           echo 'DB_DATABASE=${{secrets.DB_DATABASE}}' >> .env
           echo 'DB_USERNAME=${{secrets.DB_USERNAME}}' >> .env
