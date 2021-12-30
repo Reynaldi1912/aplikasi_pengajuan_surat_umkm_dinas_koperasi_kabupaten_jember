@@ -18,7 +18,7 @@
                 @if($konsultasi->status_konsultasi == 'terima')
                     <p> <i class="fa fa-pencil-alt"></i> &nbsp; Anda Telah Mendaftar Konsultasi </p>
                 @elseif($konsultasi->status_konsultasi == 'pending') 
-                    <p> <i class="fa fa-clock"></i> &nbsp; pengajuan konsultasi anda sedang menunggu Konfirmasi </p>
+                    <p> <i class="fa fa-clock"></i> &nbsp; Pengajuan Konsultasi Anda Sedang Menunggu Konfirmasi </p>
                     <form action="{{route('pengajuan.konsultasi.batal', $konsultasi->id_konsultasi)}}" method="POST">
                         @csrf
                         @method('PUT')
