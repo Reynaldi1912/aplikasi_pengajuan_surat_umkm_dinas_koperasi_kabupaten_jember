@@ -33,10 +33,6 @@ class oracle
 
     function upload_file_oracle($bucket_name, $folder_name = '', $file_name)
     {
-        $ORACLE_ACCESS_KEY = env('ORACLE_ACCESS_KEY');
-        $ORACLE_SECRET_KEY = env('ORACLE_SECRET_KEY');
-        $ORACLE_REGION = env('ORACLE_REGION');
-        $ORACLE_NAMESPACE = env('ORACLE_NAMESPACE');
         $ORACLE_PREAUTHENTICATED_REQUEST = env('ORACLE_PREAUTHENTICATED_REQUEST');
 
         if (empty(trim($bucket_name))) {
@@ -105,6 +101,7 @@ class oracle
     {
         $bucket_name = env('ORACLE_BUCKET_NAME');
         $folder_name = 'berkas';
+        $file_name = str_replace("\\", "/", $file_name);
         $upload = $this->upload_file_oracle($bucket_name,$folder_name,$file_name);
         return $upload;
     }
