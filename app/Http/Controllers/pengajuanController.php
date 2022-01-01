@@ -12,6 +12,7 @@ use App\Models\usaha;
 use App\Models\nilai_usaha;
 use App\Models\User;
 use App\Models\pengajuan_ditolak;
+use App\Models\oracle;
 
 use Auth;
 use PDF;
@@ -46,6 +47,11 @@ class pengajuanController extends Controller
         $pengajuan = pengajuan::with('data_diri','usaha','berkas')->where('status','selesai verifikasi')->get();
 
         return view('pengajuan.list-sertifikat',['title'=>$title , 'path'=>$path, 'path_link'=>$path_link,'pengajuan'=>$pengajuan]);
+    }
+
+    public function oracle() {
+        $data = new oracle;
+        return $data;
     }
 
     public function upload_sertifikat($id)
@@ -101,6 +107,24 @@ class pengajuanController extends Controller
         //
     }
 
+    public function uploadFile(Request $request, $oke) 
+    {
+        $result = '';
+        $file = $request->file($oke);
+        $name = $file->getClientOriginalName();
+
+        $extension = explode('.',$name);
+        $extension = strtolower(end($extension));
+
+        $key = rand().'.'.$oke;
+        $tmp_file_name = "{$key}.{$extension}";
+        $tmp_file_path = "pengajuan/images/";
+        $file->move($tmp_file_path,$tmp_file_name);
+
+        $result = 'pengajuan/images/'.'/'.$tmp_file_name;
+        return $result;
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -115,37 +139,59 @@ class pengajuanController extends Controller
             'pas_foto' => 'required',
             'surat_pernyataan' => 'required',
             'sku' => 'required',
-
         ]);
             
-           $scan_ktp = $request->file('scan_ktp');
-           $foto_produk = $request->file('foto_produk');
-           $pas_foto = $request->file('pas_foto');
-           $surat_pernyataan = $request->file('surat_pernyataan');
-           $sku = $request->file('sku');
-           
-           $scanKtpImage = time().'.'.$scan_ktp->extension();
-           $fotoProdukImage = time().'.'.$foto_produk->extension();
-           $pasFotoImage = time().'.'.$pas_foto->extension();
-           $suratPeryataanImage = time().'.'.$surat_pernyataan->extension();
-           $skuImage = time().'.'.$sku->extension();
-   
-   
-           $scan_ktp->move(public_path('images'),$scanKtpImage);
-           $foto_produk->move(public_path('images'),$fotoProdukImage);
-           $pas_foto->move(public_path('images'),$pasFotoImage);
-           $surat_pernyataan->move(public_path('images'),$suratPeryataanImage);
-           $sku->move(public_path('images'),$skuImage);
-   
-           berkas::create([
-            'scan_ktp' => $scanKtpImage,
-            'pas_foto_berwarna' => $pasFotoImage,
-            'foto_produk' =>  $fotoProdukImage,
-            'surat_pernyataan' => $suratPeryataanImage,
-            'sku_dari_desa' => $skuImage,
-            ]);
+        // $scan_ktp1 = $request->file('scan_ktp');
+        // $foto_produk1 = $request->file('foto_produk');
+        // $pas_foto1 = $request->file('pas_foto');
+        // $surat_pernyataan1 = $request->file('surat_pernyataan');
+        // $sku1 = $request->file('sku');
 
-            return back();
+        // $scanKtpImage = time().'.'.$scan_ktp1->extension();
+        // $fotoProdukImage = time().'.'.$foto_produk1->extension();
+        // $pasFotoImage = time().'.'.$pas_foto1->extension();
+        // $suratPeryataanImage = time().'.'.$surat_pernyataan1->extension();
+        // $skuImage = time().'.'.$sku1->extension();
+   
+   
+        // $scan_ktp->move(public_path('images'),$scanKtpImage);
+        // $foto_produk->move(public_path('images'),$fotoProdukImage);
+        // $pas_foto->move(public_path('images'),$pasFotoImage);
+        // $surat_pernyataan->move(public_path('images'),$suratPeryataanImage);
+        // $sku->move(public_path('images'),$skuImage);
+
+        $scan_ktp = $this->uploadFile($request,'scan_ktp');
+        $foto_produk = $this->uploadFile($request,'foto_produk');
+        $pas_foto = $this->uploadFile($request,'pas_foto');
+        $surat_pernyataan = $this->uploadFile($request,'surat_pernyataan');
+        $sku = $this->uploadFile($request,'sku');
+
+        $fn_scan_ktp = $scan_ktp;
+        $fn_foto_produk = $foto_produk;
+        $fn_pas_foto = $pas_foto;
+        $fn_surat_pernyataan = $surat_pernyataan;
+        $fn_sku = $sku;
+
+        $up_scan_ktp = $this->oracle()->upFileOracle($fn_scan_ktp);
+        $up_foto_produk = $this->oracle()->upFileOracle($fn_foto_produk);
+        $up_pas_foto = $this->oracle()->upFileOracle($fn_pas_foto);
+        $up_surat_pernyataan = $this->oracle()->upFileOracle($fn_surat_pernyataan);
+        $up_sku = $this->oracle()->upFileOracle($fn_sku);
+   
+        berkas::create([
+            // 'scan_ktp' => $scanKtpImage,
+            // 'pas_foto_berwarna' => $pasFotoImage,
+            // 'foto_produk' =>  $fotoProdukImage,
+            // 'surat_pernyataan' => $suratPeryataanImage,
+            // 'sku_dari_desa' => $skuImage,
+            'scan_ktp' => $up_scan_ktp['message'],
+            'pas_foto_berwarna' => $up_pas_foto['message'],
+            'foto_produk' =>  $up_foto_produk['message'],
+            'surat_pernyataan' => $up_surat_pernyataan['message'],
+            'sku_dari_desa' => $up_sku['message'],
+        ]);
+
+        return redirect()->back();
  
     }
 
