@@ -104,7 +104,7 @@ class oracle
     public function upFileOracle($file_name)
     {
         $bucket_name = env('ORACLE_BUCKET_NAME');
-        $folder_name = '';
+        $folder_name = 'berkas';
         $upload = $this->upload_file_oracle($bucket_name,$folder_name,$file_name);
         return $upload;
     }
