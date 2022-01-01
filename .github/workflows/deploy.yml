@@ -5,8 +5,8 @@ on:
     branches:
       - '*'
 jobs:
-  build:
-    name: Build and Deploy
+  build-a:
+    name: Build and Deploy to Webserver A
     runs-on: ubuntu-latest
     steps:
       - name: 'Start build job'
@@ -21,10 +21,12 @@ jobs:
 
       - name: 'Setup Environment'
         run: |
+          echo 'APP_NAME="Diskopum A"' >> .env
           echo 'DB_HOST=${{secrets.DB_HOST}}' >> .env
           echo 'DB_DATABASE=${{secrets.DB_DATABASE}}' >> .env
           echo 'DB_USERNAME=${{secrets.DB_USERNAME}}' >> .env
           echo 'DB_PASSWORD=${{secrets.DB_PASSWORD}}' >> .env
+          echo 'SESSION_DRIVER=database' >> .env
           echo 'MAIL_HOST=${{secrets.MAIL_HOST}}' >> .env
           echo 'MAIL_PORT=${{secrets.MAIL_PORT}}' >> .env
           echo 'MAIL_USERNAME=${{secrets.MAIL_USERNAME}}' >> .env
@@ -66,26 +68,26 @@ jobs:
 
       - name: 'Check Existing Instance'
         run: |
-          echo "INSTANCE_OCID=$( \
+          echo "INSTANCE_OCID_A=$( \
             oci compute instance list \
             --lifecycle-state RUNNING \
             --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} \
-            --display-name diskopum \
+            --display-name diskopum-a \
             --query "data [0].id" \
             --raw-output \
             )" >> $GITHUB_ENV
 
       - name: 'Create Instance'
-        if: ${{!env.INSTANCE_OCID}}
+        if: ${{!env.INSTANCE_OCID_A}}
         run: |
-          echo "INSTANCE_OCID=$( \
+          echo "INSTANCE_OCID_A=$( \
             oci compute instance launch \
             -c ${{secrets.VM_COMPARTMENT_OCID}} \
             --availability-domain ${{secrets.VM_AVAILABILITY_DOMAIN}} \
             --shape ${{secrets.VM_SHAPE}} \
             --shape-config '{"memoryInGBs": 8, "ocpus": 1}' \
             --assign-public-ip true \
-            --display-name diskopum \
+            --display-name diskopum-a \
             --image-id ${{secrets.VM_CUSTOM_IMAGE_OCID}} \
             --ssh-authorized-keys-file /home/runner/.oci/oci_api_key_public.pem \
             --subnet-id ${{secrets.VM_SUBNET_OCID}} \
@@ -96,17 +98,17 @@ jobs:
 
       - name: 'Get Instance IP'
         run: |
-          echo "INSTANCE_IP=$( \
+          echo "INSTANCE_IP_A=$( \
             oci compute instance list-vnics \
-            --instance-id ${{env.INSTANCE_OCID}} \
+            --instance-id ${{env.INSTANCE_OCID_A}} \
             --query 'data [0]."public-ip"' \
             --raw-output \
             )" >> $GITHUB_ENV
-          echo Instance IP: ${{ env.INSTANCE_IP }}
+          echo Instance IP: ${{ env.INSTANCE_IP_A }}
 
       - name: 'Wait for SSH'
         run: |
-          while ! nc -w5 -z ${{ env.INSTANCE_IP }} 22; do
+          while ! nc -w5 -z ${{ env.INSTANCE_IP_A }} 22; do
           sleep 5
           echo "SSH not available..."
           done; echo "SSH ready!"
@@ -114,7 +116,7 @@ jobs:
       - name: 'Deploy Deployment Configuration'
         uses: appleboy/scp-action@master
         with:
-          host: ${{ env.INSTANCE_IP }}
+          host: ${{ env.INSTANCE_IP_A }}
           username: opc
           key: ${{ secrets.OCI_KEY_FILE }}
           debug: false
@@ -124,7 +126,7 @@ jobs:
       - name: 'Install Docker Compose'
         uses: appleboy/ssh-action@master
         with:
-          host: ${{env.INSTANCE_IP}}
+          host: ${{env.INSTANCE_IP_A}}
           username: opc
           key: ${{secrets.OCI_KEY_FILE}}
           script: |
@@ -139,7 +141,7 @@ jobs:
       - name: 'Running Docker Compose'
         uses: appleboy/ssh-action@master
         with:
-          host: ${{env.INSTANCE_IP}}
+          host: ${{env.INSTANCE_IP_A}}
           username: opc
           key: ${{secrets.OCI_KEY_FILE}}
           script: |
@@ -151,7 +153,157 @@ jobs:
       - name: 'Install Dependency'
         uses: appleboy/ssh-action@master
         with:
-          host: ${{env.INSTANCE_IP}}
+          host: ${{env.INSTANCE_IP_A}}
+          username: opc
+          key: ${{secrets.OCI_KEY_FILE}}
+          script: |
+            sudo /usr/local/bin/docker-compose exec -T app composer install
+            sudo /usr/local/bin/docker-compose exec -T app php artisan key:generate
+            sudo /usr/local/bin/docker-compose exec -T app php artisan storage:link
+
+  build-b:
+    name: Build and Deploy to Webserver B
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Start build job'
+        run: |
+          echo "Starting the build job"
+          
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+
+      - name: Copy .env
+        run: cp .env.example .env
+
+      - name: 'Setup Environment'
+        run: |
+          echo 'APP_NAME="Diskopum B"' >> .env
+          echo 'DB_HOST=${{secrets.DB_HOST}}' >> .env
+          echo 'DB_DATABASE=${{secrets.DB_DATABASE}}' >> .env
+          echo 'DB_USERNAME=${{secrets.DB_USERNAME}}' >> .env
+          echo 'DB_PASSWORD=${{secrets.DB_PASSWORD}}' >> .env
+          echo 'SESSION_DRIVER=database' >> .env
+          echo 'MAIL_HOST=${{secrets.MAIL_HOST}}' >> .env
+          echo 'MAIL_PORT=${{secrets.MAIL_PORT}}' >> .env
+          echo 'MAIL_USERNAME=${{secrets.MAIL_USERNAME}}' >> .env
+          echo 'MAIL_PASSWORD=${{secrets.MAIL_PASSWORD}}' >> .env
+          echo 'MAIL_ENCRYPTION=${{secrets.MAIL_ENCRYPTION}}' >> .env
+          echo 'MAIL_FROM_ADDRESS=${{secrets.MAIL_FROM_ADDRESS}}' >> .env
+          echo 'MAIL_FROM_NAME=${{secrets.MAIL_FROM_NAME}}' >> .env
+
+      - name: 'Write config'
+        run: |
+          mkdir ~/.oci
+          echo "[DEFAULT]" >> ~/.oci/config
+          echo "user=${{secrets.OCI_USER_OCID}}" >> ~/.oci/config
+          echo "fingerprint=${{secrets.OCI_FINGERPRINT}}" >> ~/.oci/config
+          echo "region=${{secrets.OCI_REGION}}" >> ~/.oci/config
+          echo "tenancy=${{secrets.OCI_TENANCY_OCID}}" >> ~/.oci/config
+          echo "key_file=~/.oci/oci_api_key.pem" >> ~/.oci/config
+          echo "${{secrets.OCI_KEY_FILE}}" >> ~/.oci/oci_api_key.pem
+          echo "${{secrets.OCI_KEY_PUBLIC}}" >> ~/.oci/oci_api_key_public.pem
+
+      - name: 'Install OCI CLI'
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          echo "/home/runner/bin" >> $GITHUB_PATH
+          exec -l $SHELL
+
+      - name: 'Fix Config File Permissions'
+        run: |
+          oci setup repair-file-permissions --file /home/runner/.oci/config
+          oci setup repair-file-permissions --file /home/runner/.oci/oci_api_key.pem
+
+      - name: 'Check Existing Instance'
+        run: |
+          echo "INSTANCE_OCID_B=$( \
+            oci compute instance list \
+            --lifecycle-state RUNNING \
+            --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} \
+            --display-name diskopum-b \
+            --query "data [0].id" \
+            --raw-output \
+            )" >> $GITHUB_ENV
+
+      - name: 'Create Instance'
+        if: ${{!env.INSTANCE_OCID_B}}
+        run: |
+          echo "INSTANCE_OCID_B=$( \
+            oci compute instance launch \
+            -c ${{secrets.VM_COMPARTMENT_OCID}} \
+            --availability-domain ${{secrets.VM_AVAILABILITY_DOMAIN}} \
+            --shape ${{secrets.VM_SHAPE}} \
+            --shape-config '{"memoryInGBs": 8, "ocpus": 1}' \
+            --assign-public-ip true \
+            --display-name diskopum-b \
+            --image-id ${{secrets.VM_CUSTOM_IMAGE_OCID}} \
+            --ssh-authorized-keys-file /home/runner/.oci/oci_api_key_public.pem \
+            --subnet-id ${{secrets.VM_SUBNET_OCID}} \
+            --wait-for-state RUNNING \
+            --query "data.id" \
+            --raw-output \
+            )" >> $GITHUB_ENV
+
+      - name: 'Get Instance IP'
+        run: |
+          echo "INSTANCE_IP_B=$( \
+            oci compute instance list-vnics \
+            --instance-id ${{env.INSTANCE_OCID_B}} \
+            --query 'data [0]."public-ip"' \
+            --raw-output \
+            )" >> $GITHUB_ENV
+          echo Instance IP: ${{ env.INSTANCE_IP_B }}
+
+      - name: 'Wait for SSH'
+        run: |
+          while ! nc -w5 -z ${{ env.INSTANCE_IP_B }} 22; do
+          sleep 5
+          echo "SSH not available..."
+          done; echo "SSH ready!"
+
+      - name: 'Deploy Deployment Configuration'
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ env.INSTANCE_IP_B }}
+          username: opc
+          key: ${{ secrets.OCI_KEY_FILE }}
+          debug: false
+          source: "."
+          target: "./"
+
+      - name: 'Install Docker Compose'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{env.INSTANCE_IP_B}}
+          username: opc
+          key: ${{secrets.OCI_KEY_FILE}}
+          script: |
+            sudo yum install -y yum-utils
+            sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+            sudo yum install -y docker-ce docker-ce-cli containerd.io
+            sudo systemctl restart docker
+            sudo firewall-cmd --zone=docker --add-service=http --permanent
+            sudo firewall-cmd --reload
+            sudo pip3 install docker-compose
+
+      - name: 'Running Docker Compose'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{env.INSTANCE_IP_B}}
+          username: opc
+          key: ${{secrets.OCI_KEY_FILE}}
+          script: |
+            sudo /usr/local/bin/docker-compose build app
+            sudo /usr/local/bin/docker-compose up -d
+            sudo /usr/local/bin/docker-compose ps
+            sudo /usr/local/bin/docker-compose exec -T app ls -l
+
+      - name: 'Install Dependency'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{env.INSTANCE_IP_B}}
           username: opc
           key: ${{secrets.OCI_KEY_FILE}}
           script: |
