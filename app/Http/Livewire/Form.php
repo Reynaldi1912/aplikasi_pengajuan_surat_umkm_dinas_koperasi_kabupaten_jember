@@ -214,7 +214,7 @@ class Form extends Component
 
             $pengajuan->save();
 
-            return redirect()->route('home')->with('success','Pengajuan Berhasil DiAjukan');        
+            return redirect()->route('home')->with('success','Pengajuan Berhasil Diajukan');        
 
     }
 
