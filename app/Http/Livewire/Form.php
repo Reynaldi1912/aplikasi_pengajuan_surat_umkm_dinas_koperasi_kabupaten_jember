@@ -9,6 +9,7 @@ use App\Models\berkas;
 use App\Models\data_diri;
 use App\Models\usaha;
 use App\Models\nilai_usaha;
+use App\Models\oracle;
 use Illuminate\Http\Request;
 use Livewire\WithFileUploads;
 
@@ -21,6 +22,11 @@ class Form extends Component
     public $nama_usaha , $jenis_usaha , $kegiatan_usaha , $tahun_mulai , $modal , $asset ,$omset , $keuntungan , $jumlah_tk , $pinjaman_dana , $ikut_pembinaan;
     public $scan_ktp , $pas_foto , $foto_produk , $surat_pernyataan , $sku;
     public $successMessage = '';
+
+    public function oracle() {
+        $data = new oracle;
+        return $data;
+    }
 
     public function firstStepSubmit()
     {
@@ -114,6 +120,25 @@ class Form extends Component
     {
         return view('form');
     }
+
+    public function uploadFile(Request $request, $oke) 
+    {
+        $result = '';
+        $file = $request->file($oke);
+        $name = $file->getClientOriginalName();
+
+        $extension = explode('.',$name);
+        $extension = strtolower(end($extension));
+
+        $key = rand().'.'.$oke;
+        $tmp_file_name = "{$key}.{$extension}";
+        $tmp_file_path = public_path('images');
+        $file->move($tmp_file_path,$tmp_file_name);
+
+        $result = public_path('images').'/'.$tmp_file_name;
+        return $result;
+    }
+
     public function store (Request $request){
         $request->validate([
             'scan_ktp' => 'required',
@@ -124,31 +149,54 @@ class Form extends Component
 
         ]);
             
-           $scan_ktp = $request->file('scan_ktp');
-           $foto_produk = $request->file('foto_produk');
-           $pas_foto = $request->file('pas_foto');
-           $surat_pernyataan = $request->file('surat_pernyataan');
-           $sku = $request->file('sku');
+        //    $scan_ktp = $request->file('scan_ktp');
+        //    $foto_produk = $request->file('foto_produk');
+        //    $pas_foto = $request->file('pas_foto');
+        //    $surat_pernyataan = $request->file('surat_pernyataan');
+        //    $sku = $request->file('sku');
            
-           $scanKtpImage = time().'1'.'.'.$scan_ktp->extension();
-           $fotoProdukImage = time().'2'.'.'.$foto_produk->extension();
-           $pasFotoImage = time().'3'.'.'.$pas_foto->extension();
-           $suratPeryataanImage = time().'4'.'.'.$surat_pernyataan->extension();
-           $skuImage = time().'5'.'.'.$sku->extension();
+        //    $scanKtpImage = time().'1'.'.'.$scan_ktp->extension();
+        //    $fotoProdukImage = time().'2'.'.'.$foto_produk->extension();
+        //    $pasFotoImage = time().'3'.'.'.$pas_foto->extension();
+        //    $suratPeryataanImage = time().'4'.'.'.$surat_pernyataan->extension();
+        //    $skuImage = time().'5'.'.'.$sku->extension();
    
    
-           $scan_ktp->move(public_path('images'),$scanKtpImage);
-           $foto_produk->move(public_path('images'),$fotoProdukImage);
-           $pas_foto->move(public_path('images'),$pasFotoImage);
-           $surat_pernyataan->move(public_path('images'),$suratPeryataanImage);
-           $sku->move(public_path('images'),$skuImage);
+        //    $scan_ktp->move(public_path('images'),$scanKtpImage);
+        //    $foto_produk->move(public_path('images'),$fotoProdukImage);
+        //    $pas_foto->move(public_path('images'),$pasFotoImage);
+        //    $surat_pernyataan->move(public_path('images'),$suratPeryataanImage);
+        //    $sku->move(public_path('images'),$skuImage);
+
+        $scan_ktp = $this->uploadFile($request,'scan_ktp');
+        $foto_produk = $this->uploadFile($request,'foto_produk');
+        $pas_foto = $this->uploadFile($request,'pas_foto');
+        $surat_pernyataan = $this->uploadFile($request,'surat_pernyataan');
+        $sku = $this->uploadFile($request,'sku');
+   
+        $fn_scan_ktp = $scan_ktp;
+        $fn_foto_produk = $foto_produk;
+        $fn_pas_foto = $pas_foto;
+        $fn_surat_pernyataan = $surat_pernyataan;
+        $fn_sku = $sku;
+   
+        $up_scan_ktp = $this->oracle()->upFileOracle($fn_scan_ktp);
+        $up_foto_produk = $this->oracle()->upFileOracle($fn_foto_produk);
+        $up_pas_foto = $this->oracle()->upFileOracle($fn_pas_foto);
+        $up_surat_pernyataan = $this->oracle()->upFileOracle($fn_surat_pernyataan);
+        $up_sku = $this->oracle()->upFileOracle($fn_sku);
    
            berkas::create([
-            'scan_ktp' => $scanKtpImage,
-            'pas_foto_berwarna' => $pasFotoImage,
-            'foto_produk' =>  $fotoProdukImage,
-            'surat_pernyataan' => $suratPeryataanImage,
-            'sku_dari_desa' => $skuImage,
+            // 'scan_ktp' => $scanKtpImage,
+            // 'pas_foto_berwarna' => $pasFotoImage,
+            // 'foto_produk' =>  $fotoProdukImage,
+            // 'surat_pernyataan' => $suratPeryataanImage,
+            // 'sku_dari_desa' => $skuImage,
+            'scan_ktp' => $up_scan_ktp['message'],
+            'pas_foto_berwarna' => $up_pas_foto['message'],
+            'foto_produk' =>  $up_foto_produk['message'],
+            'surat_pernyataan' => $up_surat_pernyataan['message'],
+            'sku_dari_desa' => $up_sku['message']
             ]);
 
             
@@ -166,7 +214,7 @@ class Form extends Component
 
             $pengajuan->save();
 
-            return redirect()->route('home')->with('success','Pengajuan Berhasil DiAjukan');        
+            return redirect()->route('home')->with('success','Pengajuan Berhasil Diajukan');        
 
     }
 

@@ -90,7 +90,6 @@ class pengajuanController extends Controller
 
     }
 
-
     /**
      * Show the form for creating a new resource.
      *
@@ -115,37 +114,36 @@ class pengajuanController extends Controller
             'pas_foto' => 'required',
             'surat_pernyataan' => 'required',
             'sku' => 'required',
-
         ]);
             
-           $scan_ktp = $request->file('scan_ktp');
-           $foto_produk = $request->file('foto_produk');
-           $pas_foto = $request->file('pas_foto');
-           $surat_pernyataan = $request->file('surat_pernyataan');
-           $sku = $request->file('sku');
-           
-           $scanKtpImage = time().'.'.$scan_ktp->extension();
-           $fotoProdukImage = time().'.'.$foto_produk->extension();
-           $pasFotoImage = time().'.'.$pas_foto->extension();
-           $suratPeryataanImage = time().'.'.$surat_pernyataan->extension();
-           $skuImage = time().'.'.$sku->extension();
+        $scan_ktp = $request->file('scan_ktp');
+        $foto_produk = $request->file('foto_produk');
+        $pas_foto = $request->file('pas_foto');
+        $surat_pernyataan = $request->file('surat_pernyataan');
+        $sku = $request->file('sku');
+
+        $scanKtpImage = time().'.'.$scan_ktp->extension();
+        $fotoProdukImage = time().'.'.$foto_produk->extension();
+        $pasFotoImage = time().'.'.$pas_foto->extension();
+        $suratPeryataanImage = time().'.'.$surat_pernyataan->extension();
+        $skuImage = time().'.'.$sku->extension();
    
    
-           $scan_ktp->move(public_path('images'),$scanKtpImage);
-           $foto_produk->move(public_path('images'),$fotoProdukImage);
-           $pas_foto->move(public_path('images'),$pasFotoImage);
-           $surat_pernyataan->move(public_path('images'),$suratPeryataanImage);
-           $sku->move(public_path('images'),$skuImage);
-   
-           berkas::create([
+        $scan_ktp->move(public_path('images'),$scanKtpImage);
+        $foto_produk->move(public_path('images'),$fotoProdukImage);
+        $pas_foto->move(public_path('images'),$pasFotoImage);
+        $surat_pernyataan->move(public_path('images'),$suratPeryataanImage);
+        $sku->move(public_path('images'),$skuImage);
+
+        berkas::create([
             'scan_ktp' => $scanKtpImage,
             'pas_foto_berwarna' => $pasFotoImage,
             'foto_produk' =>  $fotoProdukImage,
             'surat_pernyataan' => $suratPeryataanImage,
             'sku_dari_desa' => $skuImage,
-            ]);
+        ]);
 
-            return back();
+        return redirect()->back();
  
     }
 

@@ -16,9 +16,9 @@
             <h3>
             @isset($konsultasi) 
                 @if($konsultasi->status_konsultasi == 'terima')
-                    <p> <i class="fa fa-pencil-alt"></i> &nbsp; Anda Telah Mendaftar Konsultasi </p>
+                    <p> <i class="fa fa-pencil-alt"></i> &nbsp; Anda telah mendaftar konsultasi </p>
                 @elseif($konsultasi->status_konsultasi == 'pending') 
-                    <p> <i class="fa fa-clock"></i> &nbsp; Pengajuan Konsultasi anda sedang menunggu Konfirmasi </p>
+                    <p> <i class="fa fa-clock"></i> &nbsp; Pengajuan Konsultasi Anda sedang Menunggu Konfirmasi </p>
                     <form action="{{route('pengajuan.konsultasi.batal', $konsultasi->id_konsultasi)}}" method="POST">
                         @csrf
                         @method('PUT')
