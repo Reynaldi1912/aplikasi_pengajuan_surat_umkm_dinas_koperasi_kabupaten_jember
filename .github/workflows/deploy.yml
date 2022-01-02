@@ -190,6 +190,12 @@ jobs:
           echo 'MAIL_ENCRYPTION=${{secrets.MAIL_ENCRYPTION}}' >> .env
           echo 'MAIL_FROM_ADDRESS=${{secrets.MAIL_FROM_ADDRESS}}' >> .env
           echo 'MAIL_FROM_NAME=${{secrets.MAIL_FROM_NAME}}' >> .env
+          echo 'ORACLE_ACCESS_KEY=${{secrets.ACCESS_KEY}}' >> .env
+          echo 'ORACLE_SECRET_KEY=${{secrets.SECRET_KEY}}' >> .env
+          echo 'ORACLE_REGION=${{secrets.OCI_REGION}}' >> .env
+          echo 'ORACLE_NAMESPACE=${{secrets.BUCKET_NAMESPACE}}' >> .env
+          echo 'ORACLE_BUCKET_NAME=${{secrets.ORACLE_BUCKET_NAME}}' >> .env
+          echo 'ORACLE_PREAUTHENTICATED_REQUEST=${{secrets.ORACLE_PREAUTHENTICATED_REQUEST}}' >> .env
 
       - name: 'Write config'
         run: |

@@ -12,6 +12,7 @@ use App\Models\usaha;
 use App\Models\nilai_usaha;
 use App\Models\User;
 use App\Models\pengajuan_ditolak;
+use App\Models\oracle;
 
 use Auth;
 use PDF;
@@ -24,6 +25,12 @@ $informasi_usaha=array();
 
 class pengajuanController extends Controller
 {
+
+    public function oracle() {
+        $data = new oracle;
+        return $data;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -187,23 +194,47 @@ class pengajuanController extends Controller
         return $pdf->stream();
     }
 
+    public function uploadFile(Request $request, $oke) 
+    {
+        $result = '';
+        $file = $request->file($oke);
+        $name = $file->getClientOriginalName();
+
+        $extension = explode('.',$name);
+        $extension = strtolower(end($extension));
+
+        $key = rand().'.'.$oke;
+        $tmp_file_name = "{$key}.{$extension}";
+        $tmp_file_path = public_path('images');
+        $file->move($tmp_file_path,$tmp_file_name);
+
+        $result = public_path('images').'/'.$tmp_file_name;
+        return $result;
+    }
+
     public function dropzoneStore(Request $request,$id)
     {
-        $image = $request->file('file');
-   
-        $imageName = time().'.'.$image->extension();
+        // $image = $request->file('file');
+        // $imageName = time().'.'.$image->extension();
+        // $image->move(public_path('images'),$imageName);
 
-        $image->move(public_path('images'),$imageName);
+        // $berkas = berkas::all()->where('id_berkas',$id)->first();
+        // $berkas->sertifikat = $imageName;
+        // $berkas->save();
+
+        $image = $this->uploadFile($request,'file');
+        $fn_image = $image;
+        $up_image = $this->oracle()->upFileOracle($fn_image);
 
         $berkas = berkas::all()->where('id_berkas',$id)->first();
-        $berkas->sertifikat = $imageName;
+        $berkas->sertifikat = $up_image['message'];
         $berkas->save();
 
         $pengajuan = pengajuan::all()->where('berkas_id',$id)->first();
         $pengajuan->status = "sertifikat tertandatangan";
         $pengajuan->save();
 
-        return response()->json(['success'=>$imageName]);
+        return response()->json(['success'=>$up_image['message']]);
     }
 
     /**

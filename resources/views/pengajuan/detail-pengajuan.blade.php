@@ -310,7 +310,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
         <div class="modal-body">
-        <img class="img-responsive" style="max-height:250px;"src="/images/{{$pengajuan->berkas->scan_ktp}}" alt="">   
+        <img class="img-responsive" style="max-height:250px;"src="{{$pengajuan->berkas->scan_ktp}}" alt="">   
         </div>
       <div class="modal-footer">
           -
@@ -327,7 +327,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <img class="img-responsive" style="max-height:250px;" src="/images/{{$pengajuan->berkas->pas_foto_berwarna}}" alt="">
+        <img class="img-responsive" style="max-height:250px;" src="{{$pengajuan->berkas->pas_foto_berwarna}}" alt="">
       </div>
       <div class="modal-footer">
           -
@@ -344,7 +344,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <img class="img-responsive" style="max-height:250px;" src="/images/{{$pengajuan->berkas->foto_produk}}" alt="">
+        <img class="img-responsive" style="max-height:250px;" src="{{$pengajuan->berkas->foto_produk}}" alt="">
       </div>
       <div class="modal-footer">
           -
@@ -361,7 +361,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-      <img class="img-responsive" style="max-height:600px;" width="450px" height="600px" src="/images/{{$pengajuan->berkas->surat_pernyataan}}" alt="">
+      <img class="img-responsive" style="max-height:600px;" width="450px" height="600px" src="{{$pengajuan->berkas->surat_pernyataan}}" alt="">
 
     </div>
       <div class="modal-footer">
@@ -379,7 +379,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <img class="img-responsive" style="max-height:500px;" src="/images/{{$pengajuan->berkas->sku_dari_desa}}" alt="">
+        <img class="img-responsive" style="max-height:500px;" src="{{$pengajuan->berkas->sku_dari_desa}}" alt="">
     </div>
       <div class="modal-footer">
           -
